@@ -1,0 +1,86 @@
+/* Base styles */
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: lightblue; /* Change the background color to light blue */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+}
+
+/* Login form container */
+.login-container {
+    background-color: rgba(255, 255, 255, 0.95); /* Semi-transparent white */
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    width: 340px; /* Adjust width as necessary */
+    backdrop-filter: blur(5px); /* Optional: Apply blur effect to the background */
+}
+
+/* Form styles */
+.login-form h2 {
+    color: #004006;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    text-align: left;
+    color: #004006; /* Dark blue text for labels */
+}
+
+.form-group input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #cccccc;
+    background-color: #f9f9f9; /* Light background for inputs */
+}
+
+/* Button styles */
+.login-button {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #004006; /* Dark blue background for button */
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.login-button:hover {
+    background-color: #002f4b; /* Slightly lighter blue on hover */
+}
+
+/* Link styles */
+a {
+    color: #004006; /* Dark blue text for links */
+    text-decoration: none;
+    font-size: 14px;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .login-container {
+        width: 90%;
+    }
+}
