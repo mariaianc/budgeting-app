@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Income Input</title>
+</head>
+<body>
+    <h1>Enter Cash and Card Income</h1>
+
+    <form method="POST">
+        <!-- CSRF Token for security -->
+        {% csrf_token %}
+        
+        <!-- Display form errors if any -->
+        {% if form.errors %}
+            <ul>
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <!-- Include the form fields -->
+        {{ form.as_p }}  <!--djando reda formul definit in forms aici si transcrie chestiile din el sub forma de paragrafe <p>, formul asta e doar ca sa poata lua input data de la user si sa il trimita la server-->
+
+        <!-- Submit Button -->
+        <button type="submit">Compute Total Income</button>
+    </form>
+
+    <!-- Display Total Income -->
+    <h2>Total Income:</h2>
+    <p>{{ total_income  }}</p> <!-- {{ ... }}: This syntax is used in Django templates for rendering variables-->
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+</head>
+<body>
+    <h1>Welcome to the Home Page</h1>
+
+    <!-- Check if the user is authenticated -->
+    {% if user.is_authenticated %}
+        <!-- If the user is logged in, display a link to the income page -->
+        <a href="{% url 'income' %}">Go to Income Page</a>
+    {% else %}
+        <!-- If the user is not logged in, display a link to the login page -->
+        <a href="{% url 'login' %}">Log In</a>
+    {% endif %}
+</body>
+</html>
