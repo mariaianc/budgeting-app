@@ -27,11 +27,33 @@
         {{ form.as_p }}  <!--djando reda formul definit in forms aici si transcrie chestiile din el sub forma de paragrafe <p>, formul asta e doar ca sa poata lua input data de la user si sa il trimita la server-->
 
         <!-- Submit Button -->
-        <button type="submit">Compute Total Income</button>
+        <button type="submit" name="action" value="compute">Compute Total Income</button>
+
+        <!-- Undo Button -->
+        <button type="submit" name="action" value="undo">Undo Last Action</button>
     </form>
 
     <!-- Display Total Income -->
     <h2>Total Income:</h2>
-    <p>{{ total_income  }}</p> <!-- {{ ... }}: This syntax is used in Django templates for rendering variables-->
+    <p>{{ total_income  }}</p> 
+
+    <!-- JavaScript to enable/disable Undo button -->
+    <script>
+        document.getElementById('compute-btn').addEventListener('click', function() {
+            // Set the value of the hidden input to indicate form is computed
+            document.getElementById('form-computed').value = "1";
+            // Enable the Undo button
+            document.getElementById('undo-btn').removeAttribute('disabled');
+        });
+
+        // Disable the Undo button after it's clicked once
+        document.getElementById('undo-btn').addEventListener('click', function() {
+            // Disable the Undo button
+            document.getElementById('undo-btn').setAttribute('disabled', 'disabled');
+            // Reset the value of the hidden input to indicate form is not computed
+            document.getElementById('form-computed').value = "0";
+        });
+    </script>
+
 </body>
 </html>
