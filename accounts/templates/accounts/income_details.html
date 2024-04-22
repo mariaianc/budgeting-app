@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Income Details</title>
+</head>
+<body>
+    <h1>Income Details</h1>
+
+    <h2>Cash Income</h2>
+    <ul>
+        {% for income in cash_incomes %}
+            <li>{{ income.amount }} - {{ income.day }} {{ income.hour }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Card Income</h2>
+    <ul>
+        {% for income in card_incomes %}
+            <li>{{ income.amount }} - {{ income.day }} {{ income.hour }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

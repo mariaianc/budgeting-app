@@ -1,0 +1,117 @@
+from .models import Expense, TotalExpense
+from .forms import ExpenseInputForm
+from decimal import Decimal
+
+@login_required
+def create_expense(request):
+
+    total_expense = TotalExpense.objects.filter(user=request.user).first()  #obj asociated with user
+    if not total_expense:                                                   # If TotalExpense object does not exist, create it
+        total_expense = TotalExpense.objects.create(user=request.user)
+
+    if request.method == 'POST':
+        print("POST")
+        form = ExpenseInputForm(request.POST)
+        if form.is_valid():
+            expense = form.save(commit=False)
+            # Set the user for the expense based on the current user
+            expense.user = request.user
+            # Save the expense object to the database
+            expense.save()
+
+            income = Income.objects.get(user=request.user)
+            income.income_left = income.income_left - expense.value
+            income.save()
+            # Update total expenses
+            update_total_expenses(request.user)
+
+            return HttpResponseRedirect(request.path_info)
+            #return redirect('expense_list')  # Redirect to a page showing the list of expenses
+    
+    elif request.method == 'GET':
+        print("GET")
+        total_amount = request.GET.get('total_amount2')
+        print("1 Total Amount:", total_amount)
+        total_amount = Decimal(total_amount) if total_amount else None
+        print("2 Total Amount:", total_amount)
+        form = ExpenseInputForm(initial={'value': total_amount})
+
+    # Get total expenses for the current user
+    total_expenses = TotalExpense.objects.get(user=request.user)
+
+    print(total_expenses)
+    
+    return render(request, 'accounts/expense.html', {'form': form, 'total_expenses': total_expenses})
+
+def update_total_expenses(user):
+    # Get all expenses of the user from database
+    user_expenses = Expense.objects.filter(user=user)
+    # Initialize total expense for each category
+    total_expenses = {
+        'housing': 0,
+        'food': 0,
+        'health': 0,
+        'utilities': 0,
+        'transport': 0,
+        'personal': 0,
+        'entertainment': 0,
+        'vices': 0,
+        'other': 0,
+    }
+
+    # Calculate total expenses for each category
+    #This line starts a loop that iterates over each expense object in the user_expenses queryset.
+    #user_expenses represents a single expense entry made by the user with expense_create()
+    for expense in user_expenses:
+        total_expenses[expense.category] += expense.value  #cauta categorie la care sa adauge ce a pus useul in fct de mai sus
+
+    #Check if TotalExpense object already exists for the user
+    total_expense = TotalExpense.objects.filter(user=user).first()
+
+    if not total_expense:
+    # If TotalExpense object does not exist, create it
+        total_expense = TotalExpense.objects.create(user=user)
+    
+    # Update individual expense fields, si le atribui pt afisare asa
+    total_expense.total_housing_expense = total_expenses['housing']
+    total_expense.total_food_expense = total_expenses['food']
+    total_expense.total_health_expense = total_expenses['health']
+    total_expense.total_utilities_expense = total_expenses['utilities']
+    total_expense.total_transport_expense = total_expenses['transport']
+    total_expense.total_personal_expense = total_expenses['personal']
+    total_expense.total_entertainment_expense = total_expenses['entertainment']
+    total_expense.total_vices_expense = total_expenses['vices']
+    total_expense.total_other_expense = total_expenses['other']
+
+    # Update total expenses field
+    total_expense.update_total_expenses()  
+
+
+
+    class TotalExpense(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    total_housing_expense = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_food_expense = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_health_expense = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_utilities_expense = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_transport_expense = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_personal_expense = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_entertainment_expense = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_vices_expense = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_other_expense = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_expenses = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    
+
+    def update_total_expenses(self):
+        self.total_expenses = (
+            self.total_housing_expense + 
+            self.total_food_expense + 
+            self.total_health_expense + 
+            self.total_utilities_expense + 
+            self.total_transport_expense + 
+            self.total_personal_expense + 
+            self.total_entertainment_expense + 
+            self.total_vices_expense + 
+            self.total_other_expense
+        )
+        self.save()

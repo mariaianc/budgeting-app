@@ -11,7 +11,9 @@
     <!-- Check if the user is authenticated -->
     {% if user.is_authenticated %}
         <!-- If the user is logged in, display a link to the income page -->
-        <a href="{% url 'income' %}">Go to Income Page</a>
+        <p><a href="{% url 'income' %}">Go to Income Page</a></p>
+        <p><a href="{% url 'create_expense' %}">Go to Expense Page</a></p>
+        <p><a href="{% url 'upload_image' %}">Upload a receipt picture</a></p>
     {% else %}
         <!-- If the user is not logged in, display a link to the login page -->
         <a href="{% url 'login' %}">Log In</a>

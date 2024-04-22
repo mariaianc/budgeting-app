@@ -1,4 +1,11 @@
 /* Base styles */
+
+/* position: relative;
+width: 1440px;
+height: 1024px; */
+
+/* background: linear-gradient(181.49deg, #192749 1.26%, #243F84 86.44%); */
+
 body, html {
     height: 100%;
     margin: 0;
@@ -6,7 +13,8 @@ body, html {
 }
 
 body {
-    background-color: lightblue; /* Change the background color to light blue */
+    background-color: lightblue; /*Change the background color to light blue 
+    /* background: linear-gradient(181.49deg, #192749 1.26%, #243F84 86.44%); */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -16,7 +24,8 @@ body {
 
 /* Login form container */
 .login-container {
-    background-color: rgba(255, 255, 255, 0.95); /* Semi-transparent white */
+    background-color: rgba(255, 255, 255, 0.95); /*Semi-transparent white 
+    /* background: linear-gradient(181.49deg, #192749 1.26%, #243F84 86.44%); */
     padding: 40px;
     border-radius: 10px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);

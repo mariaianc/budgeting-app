@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Split Income</title>
+</head>
+<body>
+    <h1>Last Month's Income</h1>
+    <p>Total Amount: {{ last_month_income.total_amount }}</p>
+    <p>Income Left: {{ last_month_income.income_left }}</p>
+
+    <h2>Split Income</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label for="id_monthly_economies">Monthly Economies:</label>
+        {{ form.monthly_economies }}
+        <br>
+        <label for="id_monthly_savings">Monthly Savings:</label>
+        {{ form.monthly_savings }}
+        <br>
+        <button type="submit">Split Income</button>
+    </form>
+</body>
+</html>

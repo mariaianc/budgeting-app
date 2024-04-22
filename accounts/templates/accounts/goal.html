@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Goal</title>
+</head>
+<body>
+    <h1>Create a New Goal</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="id_title">Title:</label><br>
+        {{ form.title }}<br>
+        <label for="id_target_amount">Target Amount:</label><br>
+        {{ form.target_amount }}<br>
+        <button type="submit">Create Goal</button>
+    </form>
+</body>
+</html>

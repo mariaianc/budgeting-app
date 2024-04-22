@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,6 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-*#0*yo&zr18fwc0erb!4b1e5jwst2pez#kc+mxk^(-n8=1rb-s'
+OCR_API_KEY = os.getenv('OCR_API_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -72,13 +75,24 @@ TEMPLATES = [
 WSGI_APPLICATION = 'budgeting_app.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+# # Database
+# # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'budgeting_app',  # Replace 'your_database_name' with the name of your PostgreSQL database
+        'USER': 'postgres',  # Replace 'your_database_user' with your PostgreSQL username
+        'PASSWORD': 'password',  # Replace 'your_database_password' with your PostgreSQL password
+        'HOST': 'localhost',  # Replace 'localhost' with your PostgreSQL host if it's not running on localhost
+        'PORT': '5432',  # Replace '' with your PostgreSQL port if it's not the default port (5432)
     }
 }
 
@@ -117,10 +131,21 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'accounts', 'static'),
 ]
+
+# STATIC_URL = 'static/'
+
+# MEDIA_ROOT = 'media/'  #pt upload images
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, 'accounts', 'static'),
+# ]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

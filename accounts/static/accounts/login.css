@@ -1,0 +1,98 @@
+body {
+    background: linear-gradient(201deg, #FFF 4.56%, #6DD5FA 61.46%, #2980B9 101.11%);
+    display: flex;
+    width: 100vw; /* Set width to 100% of viewport width */
+    height: 100vh; /* Set height to 100% of viewport height */
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+    overflow: hidden; /* Prevent scrolling */
+    justify-content: center;
+    align-items: center;
+  }
+  
+  
+  .form-container {
+    display: flex;
+    width: 400px;
+    height: 300px;
+    padding: 64px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 46px;
+    flex-shrink: 0;
+    border-radius: 20px;
+    background: #FFF;
+  }
+  
+  /* .poppins-medium {
+    font-family: "Poppins", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+  } */
+  
+  .signup-title {
+    flex: 1 0 0;
+    color: #000;
+    text-align: center;
+    font-size: 40px;
+    font-family: "Poppins", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+    line-height: normal;
+    margin-bottom: 0px;
+  }
+  
+  
+  .textbox-container {
+    padding: 8px 8px; /* pt distantele intre scris si marginile textboxului */
+    align-items: flex-start;
+    gap: 10px;  /* pune spatiu intre textul din textbox */
+    align-self: stretch;
+    border-radius: 8px;
+    border: 1px solid #DADADA;
+    margin-bottom: 20px; /* Add margin to create spacing between textboxes */
+    width: 350px;
+  }
+  
+  .textbox-container input {
+    width: 100%;
+    border: none; /* Remove border from input elements inside .textbox-container */
+    color: #989898; /* Set text color */
+    font-family: "Poppins", sans-serif; /* Set font family */
+    font-size: 16px; /* Set font size */
+    font-style: normal; /* Set font style */
+    font-weight: 300; /* Set font weight */
+    line-height: normal; /* Set line height */
+  }
+  
+  .button {
+    display: flex;
+    padding: 10px 42px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    border-radius: 8px;
+    background: #003E77;
+    border: none;
+    cursor: pointer;
+    color: #FFF;
+    text-align: center;
+    font-family: 'Saira', sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    margin: auto;
+    margin-top: 50px;
+    margin-bottom: 20px;
+  }
+  
+  .button:hover {
+    background: #002b54;
+  }
+  
+  .button:focus {
+    outline: none; /* Remove outline on focus */
+  }
+  

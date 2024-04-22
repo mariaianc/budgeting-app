@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Image</title>
+</head>
+<body>
+    <h2>Upload Image</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Upload</button>
+    </form>
+    
+    <div>
+        <h3>Uploaded Receipt Items</h3>
+        {% for item in formatted_data %}
+            <p>{{ item }}</p>
+        {% endfor %}
+    </div>
+
+    <div>
+        <p>{{ separator }}</p>
+    </div>
+
+    <div>
+        <h3>Total Amount</h3>
+        <p>{{ total_amount }}</p>
+    </div>
+
+    <form action="{% url 'create_expense' %}" method="get">
+        {% csrf_token %}
+        <input type="hidden" name="total_amount2" value="{{ total_amount2 }}">
+        <button type="submit">Create Expense</button>
+    </form>
+
+</body>
+</html>

@@ -5,11 +5,6 @@ import re  #re is a built-in Python module that provides support for working wit
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import AuthenticationForm
 
-# class LoginForm(AuthenticationForm):
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.fields['username'].widget.attrs.update({'placeholder': 'Enter your username'})
-#         self.fields['password'].widget.attrs.update({'placeholder': 'Enter your password'})
 
 from django.contrib.auth import authenticate
 
@@ -97,7 +92,6 @@ class RegisterForm(UserCreationForm):
             raise ValidationError('Email is used in another account.')
         return email
     
-
     def clean_password1(self):
         password1 = self.cleaned_data['password1']
         errors = []
@@ -145,3 +139,86 @@ class IncomeForm(forms.Form):
         if card_amount is not None:
             card_amount = Decimal(str(card_amount)).quantize(Decimal('0.01'), rounding=ROUND_DOWN)
         return card_amount
+
+from .models import Expense
+class ExpenseInputForm(forms.ModelForm):  #defined django form class
+    #type, frequency, category, and value are fields of the form
+    #those are instances of ChoiceField too => allow the user to select a single choice from a list of predefined ones
+
+    #define choices using touples, they are used to render the form but are not directly related to the database schema, so they help in defining the html
+    #first val = to store in the database
+    #second value = the human-readable label displayed to the user, helps at HTML.
+    TYPE_CHOICES = (
+        ('essential', 'Essential'),
+        ('important', 'Important'),
+        ('minor', 'Minor'),
+    )
+
+    #These choices are provided using the choices parameter of forms.ChoiceField.
+    #this is the name of the field in the form: type
+    type = forms.ChoiceField(choices=TYPE_CHOICES, widget=forms.RadioSelect) #user can select one option from the available choices by clicking on a radio button.
+
+    FREQUENCY_CHOICES = (
+        ('one_time', 'One Time'),
+        ('daily', 'Daily'),
+        ('weekly', 'Weekly'),
+        ('monthly', 'Monthly'),
+        ('6_months', 'Every 6 Months'),
+        ('yearly', 'Yearly'),
+    )
+    frequency = forms.ChoiceField(choices=FREQUENCY_CHOICES, widget=forms.RadioSelect)
+
+    CATEGORY_CHOICES = (
+        ('housing', 'Housing'),
+        ('food', 'Food'),
+        ('health', 'Health'),
+        ('utilities', 'Utilities'),
+        ('transport', 'Transport'),
+        ('personal', 'Personal'),
+        ('entertainment', 'Entertainment'),
+        ('vices', 'Vices'),
+        ('other', 'Other'),
+    )
+    category = forms.ChoiceField(choices=CATEGORY_CHOICES, widget=forms.RadioSelect)
+
+    value = forms.DecimalField(label='Value', max_digits=10, decimal_places=2, required=True)
+
+    class Meta:
+        model = Expense
+        fields = ['type', 'frequency', 'category', 'value']
+
+
+from django import forms
+from .models import Image
+
+class ImageForm(forms.ModelForm):
+    class Meta:
+        model = Image
+        fields = ['image']
+
+
+from .models import Goal
+class GoalForm(forms.ModelForm):
+
+    class Meta:
+        model = Goal
+        fields = ['title', 'target_amount']
+
+
+
+class SplitIncomeForm(forms.Form):
+    monthly_economies = forms.DecimalField(
+        label='Monthly Economies',
+        min_value=0,
+        max_digits=10,
+        decimal_places=2,
+        required=True
+    )
+    monthly_savings = forms.DecimalField(
+        label='Monthly Savings',
+        min_value=0,
+        max_digits=10,
+        decimal_places=2,
+        required=True
+    )
+

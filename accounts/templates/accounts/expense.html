@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Expense</title>
+</head>
+<body>
+    <h1>Create Expense</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        <label for="id_value">Value:</label><br>
+        {{ form.value }}
+        <br>
+        <br> 
+
+        {% comment %} <label for="id_value">Value:</label><br>
+        {% if form.value.value %}
+        <input type="text" name="value" value="{{ form.value.value }}">
+        {% else %}
+        <input type="text" name="value">
+        {% endif %}
+        <br><br> {% endcomment %}
+        <label for="id_type">Type:</label><br>
+        {{ form.type }}
+        <br>
+        <label for="id_frequency">Frequency:</label><br>
+        {{ form.frequency }}
+        <br>
+        <label for="id_category">Category:</label><br>
+        {{ form.category }}
+        <br>
+        <button type="submit">Save Expense</button>
+    </form>
+
+    <h2>Total Expenses</h2>
+    <p>Housing: ${{ total_expenses.total_housing_expense }}</p>
+    <p>Food: ${{ total_expenses.total_food_expense }}</p>
+    <p>Health: ${{ total_expenses.total_health_expense }}</p>
+    <p>Utilities: ${{ total_expenses.total_utilities_expense }}</p>
+    <p>Transport: ${{ total_expenses.total_transport_expense }}</p>
+    <p>Personal: ${{ total_expenses.total_personal_expense }}</p>
+    <p>Entertainment: ${{ total_expenses.total_entertainment_expense }}</p>
+    <p>Vices: ${{ total_expenses.total_vices_expense }}</p>
+    <p>Other: ${{ total_expenses.total_other_expense }}</p>
+    <p>Total Expenses: ${{ total_expenses.total_expenses }}</p>
+</body>
+</html>

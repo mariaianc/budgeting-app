@@ -1,61 +1,46 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'accounts/register.css' %}">
     <title>Register</title>
-    <link rel="stylesheet" href="{% static 'accounts/styles.css' %}">
 </head>
 <body>
-    
-    <div class="login-container">
-        <form method="post" class="login-form">
-           {% csrf_token %}
-            <div class="form-group">
-                <label for="id_username">Username</label>
-                {{ form.username }}
-                {% for error in form.username.errors %}
-                    <span class="error" style="color: red;">{{ error }}</span><br>
-                {% endfor %}
-            </div>
-            <div class="form-group">
-                <label for="id_first_name">First name</label>
-                {{ form.first_name }}
-                {% for error in form.first_name.errors %}
-                    <span class="error" style="color: red;">{{ error }}</span><br>
-                {% endfor %}
-            </div>
-            <div class="form-group">
-                <label for="id_last_name">Last name</label>
-                {{ form.last_name }}
-                {% for error in form.last_name.errors %}
-                    <span class="error" style="color: red;">{{ error }}</span><br>
-                {% endfor %}
-            </div>
-            <div class="form-group">
-                <label for="id_email">Email address</label>
-                {{ form.email }}
-                {% for error in form.email.errors %}
-                    <span class="error" style="color: red;">{{ error }}</span><br>
-                {% endfor %}
-            </div>
-            <div class="form-group">
-                <label for="id_password1">Password</label>
-                {{ form.password1 }}
-                {% for error in form.password1.errors %}
-                    <span class="error" style="color: red;">{{ error }}</span><br>
-                {% endfor %}
-            </div>
-            <div class="form-group">
-                <label for="id_password2">Confirm password</label>
-                {{ form.password2 }}
-                {% for error in form.password2.errors %}
-                    <span class="error" style="color: red;">{{ error }}</span><br>
-                {% endfor %}
-            </div>
-            <button class="login-button" type="submit">Register</button>
-        </form>
+  
+  <div class="form-container">
+
+    <h2 class="signup-title">Signup</h2>
+    <form method="post">
+      {% csrf_token %}
+    <div class="textbox-container">
+        <input type="text" placeholder="Username" name="username">
     </div>
+    <div class="textbox-container">
+        <input type="text" placeholder="First name" name="first_name">
+    </div>
+    <div class="textbox-container">
+        <input type="text" placeholder="Last name" name="last_name">
+    </div>
+    <div class="textbox-container">
+        <input type="email" placeholder="Email address" name="email">
+    </div>
+    <div class="textbox-container">
+        <input type="password" placeholder="Create a password" name="password1">
+    </div>
+    <div class="textbox-container">
+        <input type="password" placeholder="Confirm your password" name="password2">
+    </div>
+    
+    <button type="submit" class="button">Submit</button>
+
+    </form>
+  </div>
+
 </body>
 </html>
