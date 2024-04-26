@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Log</title>
+</head>
+<body>
+    <!-- Input area for user to send message -->
+    <form id="chat-form" method="post">
+        {% csrf_token %}
+        <input type="text" name="message" id="user-input" placeholder="Type your message...">
+        <button type="submit">Send</button>
+    </form>
+    
+    <!-- Display conversation -->
+    <div id="conversation">
+        {% for message in conversation %}
+            {% if message.role == "user" %}
+                <p><strong>User:</strong> {{ message.content }}</p>
+            {% elif message.role == "assistant" %}
+                <p><strong>Assistant:</strong> {{ message.content }}</p>
+            {% endif %}
+        {% endfor %}
+    </div>
+</body>
+</html>

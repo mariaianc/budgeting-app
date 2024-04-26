@@ -282,19 +282,19 @@ def upload_image(request):
             image_url = image_uploaded.image.url
             image_url = request.build_absolute_uri(image_uploaded.image.url)
 
-            ocr_api_key = os.getenv('OCR_API_KEY')
+            # ocr_api_key = os.getenv('OCR_API_KEY')
             
             # # Call the OCR API with the image URL
             # receipt_ocr_endpoint = 'https://ocr.asprise.com/api/v1/receipt'
             # payload = {
-            #     'api_key': ocr_api_key,,
+            #     'api_key': ocr_api_key,
             #     'recognizer': 'auto',
             # }
             # files = {"file": requests.get(image_url).content}
             # r = requests.post(receipt_ocr_endpoint, data=payload, files=files)
             # ocr_result = r.json()
 
-            # # Store JSON response in a file
+            # Store JSON response in a file
             # with open('ocr_result.json', 'w') as json_file:
             #     json.dump(ocr_result, json_file)
 
@@ -324,8 +324,24 @@ def upload_image(request):
     return render(request, 'accounts/upload_image.html', {'form': form})
 
 
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
 from .forms import GoalForm
+from .models import Goal
+from django.contrib.auth.decorators import login_required
+
+@login_required
 def create_goal(request):
+    # Check if there are any existing goals for the user
+    existing_goals = Goal.objects.filter(user=request.user)
+    
+    if existing_goals.exists():
+        # Check if any existing goals have not been achieved
+        unachieved_goals_exist = existing_goals.filter(achieved=False).exists()
+        if unachieved_goals_exist:
+            # If there are unachieved goals, prevent the user from creating a new one
+            return HttpResponse("You cannot create a new goal until the previous one is achieved.")
+    
     if request.method == 'POST':
         form = GoalForm(request.POST)
         if form.is_valid():
@@ -333,10 +349,12 @@ def create_goal(request):
             goal = form.save(commit=False)
             goal.user = request.user  # Assign the current user to the goal
             goal.save()
-            return redirect('/see_goals/')  # Redirect to the detail page of the created goal
+            #return redirect('/see_goals/')  # Redirect to the detail page of the created goal
     else:
         form = GoalForm()
+        
     return render(request, 'accounts/goal.html', {'form': form})
+
 
 
 from .models import Goal
@@ -386,5 +404,156 @@ from datetime import datetime, timedelta
 #         form = SplitIncomeForm()
 
 #     return render(request, 'split_income.html', {'last_month_income': last_month_income, 'form': form})
+
+
+
+
+from django.shortcuts import render
+from django.http import HttpResponse
+from django.template import TemplateDoesNotExist  # Import TemplateDoesNotExist
+import os
+from openai import OpenAI
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Function to test OpenAI API key
+def test_openai_api_key(request):
+    # Get API key from environment variables
+    api_key = os.getenv("OPENAI_API_KEY")
+    if api_key is None:
+        return HttpResponse("Error: OpenAI API key not found in environment variables.")
+
+    # Create OpenAI client instance with API key
+    client = OpenAI(api_key=api_key)
+
+    # Test API key by calling a simple API method
+    try:
+        # Call OpenAI API with a simple message and specify the model
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo-0125",
+            messages=[
+                {"role": "system", "content": "You are a budgeting analyst."},
+                {"role": "user", "content": "how to maximize my savings?"}
+            ],
+            max_tokens=100  # Adjust the maximum number of tokens as needed
+        )
+        
+        # Accessing the completion text from the response
+        completion_text = response.choices[0].message.content
+        
+        # Render a template with the completion text
+        try:
+            return render(request, 'accounts/openai_result.html', {'completion_text': completion_text})
+        except TemplateDoesNotExist as e:
+            return HttpResponse("Error: TemplateDoesNotExist - " + str(e))
+    except Exception as e:
+        return HttpResponse("Error: " + str(e) + ". API key is not working.")
+
+
+#ASTA MERGE, ITI RASPUNDE LA FIECARE CHESTIE DIN CHAT, TREBUIE SA VAD CUM IL FAC SA FIE CHAT FARA SA ISI DEA RESET PAGINA 
+
+from django.shortcuts import render
+
+# Assuming you have already imported other necessary modules and classes
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+conversation = []  # Initialize an empty list to store conversation messages
+
+def chat_view(request):
+    
+    if request.method == 'POST':
+        user_input = request.POST.get('message')
+        if user_input:
+            # Append user message to conversation
+            conversation.append({"role": "user", "content": user_input})
+            
+            # Create the OpenAI client
+            client = OpenAI(api_key=OPENAI_API_KEY)
+            completion = client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": "You are a budgeting analyst."},
+                    {"role": "user", "content": user_input}
+                ]
+            )
+            # Append AI response to conversation
+            conversation.append({"role": "assistant", "content": completion.choices[0].message.content})
+    
+    return render(request, 'accounts/chat.html', {'conversation': conversation})
+
+
+
+from .forms import SplitIncomeForm  # Import your form class here
+
+@login_required
+def split_income(request):
+    user = request.user
+    now = datetime.now()
+    month = now.month
+    year = now.year
+
+    if month == 1:
+        last_month = 12
+        year -= 1
+    else:
+        last_month = month - 1
+
+    last_month_income = Income.objects.filter(user=user, month=last_month, year=year).last()
+
+    if request.method == 'POST':
+        form = SplitIncomeForm(request.POST)
+        if form.is_valid():
+            economies_amount_raw = form.cleaned_data['economies_amount']
+            goal_amount_raw = form.cleaned_data['goal_amount']
+            economies_amount = Decimal(str(economies_amount_raw)).quantize(Decimal('0.01'))
+            goal_amount = Decimal(str(goal_amount_raw)).quantize(Decimal('0.01'))
+            print(economies_amount)
+            print(goal_amount)
+
+            # Calculate remaining income after splitting
+            remaining_income = last_month_income.income_left
+            remaining_income -= Decimal(economies_amount)
+            remaining_income -= Decimal(goal_amount)
+            last_month_income.income_left=remaining_income
+            last_month_income.save()
+
+            # Save the split income to the respective models
+            economies = Economies.create_or_update_economies(
+                user=user,
+                month=last_month,
+                year=year,
+                monthly_economies=economies_amount
+            )
+            print(economies.monthly_economies)
+
+            goal = Goal.objects.filter(user=user).last()
+            if goal.achieved==False:
+                goal_savings = GoalSavings.create_or_update_goal_savings(
+                    goal=goal,
+                    month=last_month,
+                    year=year,
+                    monthly_savings=goal_amount
+                )
+                print(goal_savings.monthly_savings)
+
+                # Check if the goal has been achieved
+                goal_savings.total_savings += Decimal(goal_amount)
+                if goal_savings.total_savings >= goal.target_amount:
+                    goal.achieved = True
+                    goal.save()
+            
+    else:
+        form = SplitIncomeForm()
+
+    return render(request, 'accounts/split_income.html', {'last_month_income': last_month_income, 'form': form})
+
+
+
+
+
+
+
 
 

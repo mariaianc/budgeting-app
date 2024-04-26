@@ -4,22 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Split Income</title>
+    
 </head>
 <body>
-    <h1>Last Month's Income</h1>
-    <p>Total Amount: {{ last_month_income.total_amount }}</p>
-    <p>Income Left: {{ last_month_income.income_left }}</p>
+    <h1>Split Your Income</h1>
 
-    <h2>Split Income</h2>
-    <form method="post">
+    <p>Last Month's Remaining Income: <span id="income_left">{{ last_month_income.income_left }}</span></p>
+
+    <form method="post" oninput="updateOtherInput()">
         {% csrf_token %}
-        <label for="id_monthly_economies">Monthly Economies:</label>
-        {{ form.monthly_economies }}
+        <label for="economies_amount">Amount for Economies:</label>
+        <input type="number" id="economies_amount" name="economies_amount" min="0"  required>
         <br>
-        <label for="id_monthly_savings">Monthly Savings:</label>
-        {{ form.monthly_savings }}
+        <label for="goal_amount">Amount for Goal:</label>
+        <input type="number" id="goal_amount" name="goal_amount" min="0"  required>
         <br>
         <button type="submit">Split Income</button>
     </form>
+
+    <script>
+        // Function to calculate and fill in the remaining value in the other input field
+        function updateOtherInput() {
+            var incomeLeft = document.getElementById("income_left").innerText;
+            var economiesAmount = document.getElementById("economies_amount").value;
+            var goalAmount = document.getElementById("goal_amount").value;
+            console.log(income_left);
+            console.log(economies_amount);
+            console.log(goal_amount);
+    
+            if (!isNaN(economiesAmount)) {
+                document.getElementById("goal_amount").value = (incomeLeft - economiesAmount);
+                //document.getElementById("economies_amount").value = (economiesAmount);
+            } 
+            else if (!isNaN(goalAmount)) {
+                document.getElementById("economies_amount").value = (incomeLeft - goalAmount);
+                //document.getElementById("goal_amount").value = (goalAmount);
+            }
+            
+        }
+    
+        // Add event listeners to input fields to trigger updateOtherInput function
+        {% comment %} document.getElementById("economies_amount").addEventListener("input", updateOtherInput);
+        document.getElementById("goal_amount").addEventListener("input", updateOtherInput); {% endcomment %}
+    </script>
+    
+
 </body>
 </html>

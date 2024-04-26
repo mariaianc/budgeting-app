@@ -25,6 +25,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-*#0*yo&zr18fwc0erb!4b1e5jwst2pez#kc+mxk^(-n8=1rb-s'
 OCR_API_KEY = os.getenv('OCR_API_KEY')
+# Get the OpenAI API key from environment variables
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

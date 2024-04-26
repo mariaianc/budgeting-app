@@ -123,6 +123,7 @@ class Goal(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     target_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    achieved = models.BooleanField(default=False)
 
 class GoalSavings(models.Model):
     goal = models.ForeignKey(Goal, on_delete=models.CASCADE)
@@ -132,12 +133,13 @@ class GoalSavings(models.Model):
     total_savings = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     @classmethod
-    def create_or_update_goal_savings(cls, goal, month, year, monthly_savings=0):
+    def create_or_update_goal_savings(cls, goal, month, year, monthly_savings):
         # Check if a goal savings object for the given goal, month, and year already exists
         goal_savings_obj, created = cls.objects.get_or_create(
             goal=goal,
             month=month,
             year=year,
+            defaults={'monthly_savings': monthly_savings, 'total_savings': monthly_savings}
         )
 
         # If the object already existed, update its fields
@@ -158,12 +160,13 @@ class Economies(models.Model):
     total_economies = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     @classmethod
-    def create_or_update_economies(cls, user, month, year, monthly_economies=0):
+    def create_or_update_economies(cls, user, month, year, monthly_economies):
         # Check if an economies object for the given month and year already exists for the user
         economies_obj, created = cls.objects.get_or_create(
             user=user,
             month=month,
             year=year,
+            defaults={'monthly_economies': monthly_economies, 'total_economies': monthly_economies}
         )
 
         # If the object already existed, update its fields

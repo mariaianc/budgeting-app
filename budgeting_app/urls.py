@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from accounts.views import register, login, home, income, income_details, create_expense, upload_image, create_goal, all_goals
+from accounts.views import *   # register, login, home, income, income_details, create_expense, upload_image, create_goal, all_goals, test_openai_api_key, chat_view
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -35,6 +35,9 @@ urlpatterns = [
    path('upload_image/', upload_image, name='upload_image'),
    path('create_goal/', create_goal, name='create_goal'),
    path('see_goals/', all_goals, name='all_goals'),
+   #path('test_openai_api/', test_openai_api_key, name='test_openai_api_key'),
+   path('chat/', chat_view, name='chat_view'),
+   path('split_income/', split_income, name='split_income'),
 
    
 ] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT) #pt upload images, automatically creates an url for the database.

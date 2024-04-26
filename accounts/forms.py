@@ -33,8 +33,6 @@ class LoginForm(forms.Form):
                 raise forms.ValidationError('Incorrect password.')
         return password
 
-    
-
 class RegisterForm(UserCreationForm):
     username = forms.CharField(widget=forms.TextInput(attrs={
         'placeholder': 'Create a username (only letters and numbers)', 
@@ -205,20 +203,9 @@ class GoalForm(forms.ModelForm):
         fields = ['title', 'target_amount']
 
 
+from django import forms
 
 class SplitIncomeForm(forms.Form):
-    monthly_economies = forms.DecimalField(
-        label='Monthly Economies',
-        min_value=0,
-        max_digits=10,
-        decimal_places=2,
-        required=True
-    )
-    monthly_savings = forms.DecimalField(
-        label='Monthly Savings',
-        min_value=0,
-        max_digits=10,
-        decimal_places=2,
-        required=True
-    )
+    economies_amount = forms.DecimalField(label='Amount for Economies', min_value=0, max_digits=10, decimal_places=2, required=False)
+    goal_amount = forms.DecimalField(label='Amount for Goal', min_value=0, max_digits=10, decimal_places=2, required=False)
 
