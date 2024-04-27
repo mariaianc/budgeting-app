@@ -115,3 +115,68 @@ def update_total_expenses(user):
             self.total_other_expense
         )
         self.save()
+
+
+
+# Import the triangular_sigmoid function from the fuzzylogic library
+from fuzzylogic.functions import triangular_sigmoid
+
+# Define a function to determine the membership of an income value in different income categories
+def income_membership(income):
+    """
+    Determine the membership of an income value in the categories: high, medium, low.
+    
+    Args:
+    - income (float): The income value.
+    
+    Returns:
+    - dict: A dictionary showing the percentage of income belonging to each category.
+    """
+    
+    # Define membership functions for income categories using triangular_sigmoid
+    high_income = triangular_sigmoid(60000, 100000)  # Example income ranges for high income
+    medium_income = triangular_sigmoid(10000, 50000)  # Example income ranges for medium income
+    low_income = triangular_sigmoid(0, 40000)  # Example income ranges for low income
+    
+    # Calculate membership degrees for each income category
+    membership_high = high_income(income)
+    membership_medium = medium_income(income)
+    membership_low = low_income(income)
+    
+    # # Calculate the total membership across all categories
+    # total_membership = membership_high + membership_medium + membership_low
+    
+    # # Calculate the percentage of income belonging to each category
+    # percentage_high = (membership_high / total_membership) * 100
+    # percentage_medium = (membership_medium / total_membership) * 100
+    # percentage_low = (membership_low / total_membership) * 100
+    
+    # # Round percentages to two decimal places
+    # percentage_high = round(percentage_high, 2)
+    # percentage_medium = round(percentage_medium, 2)
+    # percentage_low = round(percentage_low, 2)
+    
+    # Create a dictionary to store the percentages of income belonging to each category
+    membership_dict = {
+        'high': membership_high,
+        'medium': membership_medium,
+        'low': membership_low
+    }
+    
+    # Return the dictionary
+    return membership_dict
+
+# Example usage
+income_value = 5000  # Example income value
+income_dict = income_membership(income_value)  # Determine the membership of the income value
+print(income_dict)  # Print the dictionary showing the percentages of income belonging to each category
+
+
+
+
+
+output recomandation:
+Based on your financial data, here are some recommendations to help you organize your budget: 1. How should I split my income left for this month between my economies fund and my goal fund? To start building up your funds, it would be beneficial to allocate a portion of your left income to both your economies fund and your goal fund. Consider dividing the 300.00 as follows: - Allocate 150.00 to your economies fund. - Allocate 150.00 to your savings fund for the car goal. 2. What amount should I put in each category? Given your current expenses breakdown, you may consider adjusting your spending in the following categories to accommodate your savings goals and maximize your income left at the end of the month: - Housing: 100.00 - This seems reasonable. - Food: 300.00 - Considering reducing this to maybe 250.00 to free up more funds for savings. - Utilities: 200.00 - This is essential, but see if there are any ways to reduce these costs. - Transport: 50.00 - This seems reasonable. - Vices: 90.00 - Consider reducing or eliminating non-essential expenses here. - Other: 50.00 - Evaluate if this amount can be reduced to allocate more to savings. 3. How can I maximize my income left at the end of the month? To increase the amount left at the end of the month, you can: - Review your food expenses and see if there are areas where you can cut back without compromising on nutrition. - Evaluate vices spending and consider reducing or eliminating these expenses to save more. - Look for ways to reduce utility costs such as using energy-efficient appliances and being mindful of water and electricity usage. - Consider setting a specific budget for personal and entertainment expenses to avoid overspending. - Continuously track your expenses and look for opportunities to save or reduce costs in different
+
+
+Based on the fuzzy logic memberships provided for your finances, here are the answers to your questions: 1. You should split the income left for this month between your economies fund and your goal fund based on their memberships. The economies fund has a higher membership in the 'high' category compared to the goal fund, so you should allocate more funds towards the economies fund. 2. To determine the exact amount to put in each category, you can calculate the weighted average of the memberships for both funds and allocate the income left accordingly. For example, if the economies fund has a membership of 0.8 in the 'high' category and the goal fund has a membership of 0.2 in the 'high' category, you can allocate 80% of the income left to the economies fund and 20% to the goal fund. 3. To maximize your income left at the end of the month, you can consider reducing expenses in categories with higher memberships in the 'high' or 'medium' range and increasing expenses in categories with lower memberships. Based on the data provided, you could potentially reduce expenses in transport and food categories, while increasing expenses in housing and other categories to achieve a higher income left at the end of the month. It's important to regularly review and adjust your budget based on your financial goals and priorities to ensure you are on track to achieve them.

@@ -86,7 +86,7 @@ class Expense(models.Model):
 
 #model pt total expenses
 class TotalExpense(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     total_housing_expense = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total_food_expense = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total_health_expense = models.DecimalField(max_digits=10, decimal_places=2, default=0)

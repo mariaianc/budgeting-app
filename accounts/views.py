@@ -370,45 +370,6 @@ from .forms import SplitIncomeForm
 from .models import Income, Economies, Goal, GoalSavings
 from datetime import datetime, timedelta
 
-# @login_required
-# def split_income(request):
-#     user = request.user
-#     now = datetime.now()
-#     month = now.month
-#     year = now.year
-
-#     if month == 1:  # If the current month is January, adjust the year and month
-#         last_month = 12  # December
-#         year -= 1  # Subtract 1 from the current year
-#     else:
-#         last_month = month - 1
-
-#     last_month_income = Income.objects.filter(user=user, month=last_month, year=year).first()
-
-#     if request.method == 'POST':
-#         form = SplitIncomeForm(request.POST)
-#         if form.is_valid():
-#             monthly_economies = form.cleaned_data['monthly_economies']
-#             monthly_savings = form.cleaned_data['monthly_savings']
-
-#             # Create or update Economies object
-#             Economies.create_or_update_economies(user=user, month=last_month, year=year, monthly_economies=monthly_economies)
-
-#             # Get or create the user's savings goal for the previous month
-#             goal, created = Goal.objects.get_or_create(user=user)
-#             # Create or update GoalSavings object
-#             GoalSavings.create_or_update_goal_savings(goal=goal, month=last_month, year=year, monthly_savings=monthly_savings)
-
-#             return redirect('dashboard')  # Redirect to the user's dashboard after splitting income
-#     else:
-#         form = SplitIncomeForm()
-
-#     return render(request, 'split_income.html', {'last_month_income': last_month_income, 'form': form})
-
-
-
-
-from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import TemplateDoesNotExist  # Import TemplateDoesNotExist
 import os
@@ -490,6 +451,7 @@ from .forms import SplitIncomeForm  # Import your form class here
 @login_required
 def split_income(request):
     user = request.user
+    user2 = request.user
     now = datetime.now()
     month = now.month
     year = now.year
@@ -547,13 +509,541 @@ def split_income(request):
     else:
         form = SplitIncomeForm()
 
-    return render(request, 'accounts/split_income.html', {'last_month_income': last_month_income, 'form': form})
+        recommendation1 = generate_recommendation_numeric(user2)  
+        recommendation2 = generate_recommendation_fuzzy(user2)
+
+    return render(request, 'accounts/split_income.html', {'last_month_income': last_month_income, 'form': form, 'recommendation1': recommendation1, 'recommendation2': recommendation2})
+
+
+def generate_recommendation_numeric(user):
+    print(user)
+    now = datetime.now()
+    month = now.month
+    year = now.year
+
+    if month == 1:
+        last_month = 12
+        year -= 1
+    else:
+        last_month = month - 1
+
+    last_month_income = Income.objects.filter(user=user, month=last_month, year=year).last()   
+    total_income = last_month_income.total_amount
+    left_income = last_month_income.income_left
+
+    last_month_total_expenses = TotalExpense.objects.filter(user=user, month=last_month, year=year).last() 
+    total_expenses = last_month_total_expenses.total_expenses
+    housing = last_month_total_expenses.total_housing_expense
+    food = last_month_total_expenses.total_food_expense
+    health = last_month_total_expenses.total_health_expense
+    utilities = last_month_total_expenses.total_utilities_expense
+    transport = last_month_total_expenses.total_transport_expense
+    personal = last_month_total_expenses.total_personal_expense
+    entertainment = last_month_total_expenses.total_entertainment_expense
+    vices = last_month_total_expenses.total_vices_expense
+    other = last_month_total_expenses.total_other_expense
+
+    goal = Goal.objects.filter(user=user).last()
+    goal_name = goal.title
+    cost = goal.target_amount
+
+    goal_savings = GoalSavings.create_or_update_goal_savings(
+    goal=goal,
+    month=last_month,
+    year=year,
+    monthly_savings=0)
+
+    savings = goal_savings.total_savings
+
+
+    economies = Economies.create_or_update_economies(
+    user=user,
+    month=last_month,
+    year=year,
+    monthly_economies=0)
+    total_economies = economies.total_economies
+    
+
+    user_input = f""" Here is my financial data from the last month:
+    About income
+    total income = {total_income}
+    left income at the end of the month = {left_income}
+
+    About expenses
+    total expenses = {total_expenses}
+    expenses per categories:
+    housing = {housing}
+    food = {food}
+    health = {health}
+    utilities = {utilities}
+    transport = {transport}
+    personal = {personal}
+    entertainment = {entertainment}
+    vices = {vices}
+    other = {other}
+
+    My economies fund is {total_economies}.
+    My goal is to obtain a {goal_name} that costs {cost}, my savings fund for this goal is {savings}.
+
+    Respond to the following questions in simple and concrete propositions:
+    1. How should I split my income left for this month between my economies fund and my goal fund?
+    2. What amount should I put in each category?
+    3. How can I maximize my income left at the end of the month? What expenses should I reduce or increase based on the data I provided?
+    """
+
+    client = OpenAI(api_key=OPENAI_API_KEY)
+
+    completion = client.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages=[
+        {"role": "system", "content": "You help me organize my budget."},
+        {"role": "user", "content": user_input}
+    ],
+    max_tokens=400
+    )
+
+    recomandation = completion.choices[0].message.content
+
+    return recomandation
+
+def generate_recommendation_fuzzy(user):
+    # Obtain user's financial data
+    now = datetime.now()
+    month = now.month
+    year = now.year
+
+    if month == 1:
+        last_month = 12
+        year -= 1
+    else:
+        last_month = month - 1
+
+    last_month_income = Income.objects.filter(user=user, month=last_month, year=year).last()
+    total_income = float(last_month_income.total_amount)
+    left_income = float(last_month_income.income_left)
+
+    last_month_total_expenses = TotalExpense.objects.filter(user=user, month=last_month, year=year).last()
+    total_expenses = float(last_month_total_expenses.total_expenses)
+    housing = float(last_month_total_expenses.total_housing_expense)
+    food = float(last_month_total_expenses.total_food_expense)
+    health = float(last_month_total_expenses.total_health_expense)
+    utilities = float(last_month_total_expenses.total_utilities_expense)
+    transport = float(last_month_total_expenses.total_transport_expense)
+    personal = float(last_month_total_expenses.total_personal_expense)
+    entertainment = float(last_month_total_expenses.total_entertainment_expense)
+    vices = float(last_month_total_expenses.total_vices_expense)
+    other = float(last_month_total_expenses.total_other_expense)
+
+    goal = Goal.objects.filter(user=user).last()
+    goal_name = goal.title
+    cost = float(goal.target_amount)
+
+    goal_savings = GoalSavings.create_or_update_goal_savings(
+        goal=goal,
+        month=last_month,
+        year=year,
+        monthly_savings=0)
+
+    savings = float(goal_savings.total_savings)
+
+    economies = Economies.create_or_update_economies(
+        user=user,
+        month=last_month,
+        year=year,
+        monthly_economies=0)
+    total_economies = float(economies.total_economies)
+
+    # Calculate membership degrees for each category
+    income_membership_dict = income_membership(total_income)
+    left_income_membership_dict = left_income_membership(left_income)
+    total_expenses_membership_dict = total_expenses_membership(total_expenses, total_income)
+    housing_membership_dict = housing_membership(housing, total_income)
+    food_membership_dict = food_membership(food, total_income)
+    health_membership_dict = health_membership(health, total_income)
+    utilities_membership_dict = utilities_membership(utilities, total_income)
+    transport_membership_dict = transport_membership(transport, total_income)
+    personal_membership_dict = personal_membership(personal, total_income)
+    entertainment_membership_dict = entertainment_membership(entertainment, total_income)
+    vices_membership_dict = vices_membership(vices, total_income)
+    other_membership_dict = other_membership(other, total_income)
+    total_economies_membership_dict = total_economies_membership(total_economies)
+
+    # Construct user input message using membership degrees
+    user_input = f""" Here is my financial data from the last month and their membership computed with help of fuzzy logic:
+    About income
+    total income membership: {income_membership_dict}
+    left income membership: {left_income_membership_dict}
+
+    About expenses
+    total expenses membership: {total_expenses_membership_dict}
+    housing membership: {housing_membership_dict}
+    food membership: {food_membership_dict}
+    health membership: {health_membership_dict}
+    utilities membership: {utilities_membership_dict}
+    transport membership: {transport_membership_dict}
+    personal membership: {personal_membership_dict}
+    entertainment membership: {entertainment_membership_dict}
+    vices membership: {vices_membership_dict}
+    other membership: {other_membership_dict}
+
+    My economies fund membership: {total_economies_membership_dict}
+    My goal is to obtain a {goal_name} that costs {cost}, my savings fund for this goal is {savings}.
+
+    Respond to the following questions in simple and concrete propositions:
+    1. How should I split my income left for this month between my economies fund and my goal fund?
+    2. What amount should I put in each category?
+    3. How can I maximize my income left at the end of the month? What expenses should I reduce or increase based on the data I provided?
+    """
+
+    # Generate recommendation using OpenAI API
+    client = OpenAI(api_key=OPENAI_API_KEY)
+
+    completion = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You help me organize my budget."},
+            {"role": "user", "content": user_input}
+        ],
+        max_tokens=600
+    )
+
+    recommendation = completion.choices[0].message.content
+
+    return recommendation
+
+
+# Import the triangular_sigmoid function from the fuzzylogic library
+from fuzzylogic.functions import triangular_sigmoid
+
+# Define a function to determine the membership of an income value in different income categories
+def income_membership(income):
+    """
+    Determine the membership of an income value in the categories: high, medium, low.
+    
+    Args:
+    - income (float): The income value.
+    
+    Returns:
+    - dict: A dictionary showing the percentage of income belonging to each category.
+    """
+    
+    # Define membership functions for income categories using triangular_sigmoid
+    high_income = triangular_sigmoid(70000, 149132)  # Example income ranges for high income
+    medium_income = triangular_sigmoid(50000, 89744)  # Example income ranges for medium income
+    low_income = triangular_sigmoid(0, 55000)  # Example income ranges for low income
+    
+    # Calculate membership degrees for each income category
+    membership_high = high_income(income)
+    membership_medium = medium_income(income)
+    membership_low = low_income(income)
+    
+    # Create a dictionary to store the percentages of income belonging to each category
+    membership_dict = {
+        'high': membership_high,
+        'medium': membership_medium,
+        'low': membership_low
+    }
+    
+    # Return the dictionary
+    return membership_dict
+
+def left_income_membership(left_income):
+    """
+    Determine the membership of an income left value (savings) in the categories: high, medium, low.
+    
+    Args:
+    - left_income (float): The income left value (savings) after expenses.
+    
+    Returns:
+    - dict: A dictionary showing the percentage of income left belonging to each category.
+    """
+    
+    # Define membership functions for left income categories using triangular_sigmoid
+    high_left_income = triangular_sigmoid(0.7 * 70000, 149132)  # Adjusted for high income
+    medium_left_income = triangular_sigmoid(0.4 * 50000, 0.7 * 89744)  # Adjusted for medium income
+    low_left_income = triangular_sigmoid(0, 0.4 * 55000)  # Adjusted for low income
+    
+    # Calculate membership degrees for each left income category
+    membership_high_left = high_left_income(left_income)
+    membership_medium_left = medium_left_income(left_income)
+    membership_low_left = low_left_income(left_income)
+    
+    # Create a dictionary to store the percentages of left income belonging to each category
+    membership_dict = {
+        'high': membership_high_left,
+        'medium': membership_medium_left,
+        'low': membership_low_left
+    }
+    
+    # Return the dictionary
+    return membership_dict
+
+#expense raportat la income
+def total_expenses_membership(expenses, income):
+   
+    high_expenses = triangular_sigmoid(0.7 * income, income)  # Adjusted for high income
+    medium_expenses = triangular_sigmoid(0.4 * income, 0.7 * income)  # Adjusted for medium income
+    low_expenses = triangular_sigmoid(0, 0.4 * income)  # Adjusted for low income
+
+    # Calculate membership degrees for each expense category
+    membership_high = high_expenses(expenses)
+    membership_medium = medium_expenses(expenses)
+    membership_low = low_expenses(expenses)
+
+    # Create a dictionary to store the percentages of expenses belonging to each income category
+    membership_dict = {
+        'high': membership_high,
+        'medium': membership_medium,
+        'low': membership_low
+    }
+    
+    # Return the dictionary
+    return membership_dict
+
+def housing_membership(housing_expense, income):
+    high_expenses = triangular_sigmoid(0.3 * income, 0.4 * income)  # Adjusted for high income
+    medium_expenses = triangular_sigmoid(0.1 * income, 0.2 * income)  # Adjusted for medium income
+    low_expenses = triangular_sigmoid(0, 0.05 * income)  # Adjusted for low income
+
+    # Calculate membership degrees for each expense category
+    membership_high = high_expenses(housing_expense)
+    membership_medium = medium_expenses(housing_expense)
+    membership_low = low_expenses(housing_expense)
+
+    # Create a dictionary to store the percentages of expenses belonging to each income category
+    membership_dict = {
+        'high': membership_high,
+        'medium': membership_medium,
+        'low': membership_low
+    }
+
+    return membership_dict
+
+def food_membership(food_expense, income):
+    high_expenses = triangular_sigmoid(0.1 * income, 0.2 * income)  # Adjusted for high income
+    medium_expenses = triangular_sigmoid(0.05 * income, 0.1 * income)  # Adjusted for medium income
+    low_expenses = triangular_sigmoid(0, 0.05 * income)  # Adjusted for low income
+
+    membership_high = high_expenses(food_expense)
+    membership_medium = medium_expenses(food_expense)
+    membership_low = low_expenses(food_expense)
+
+    membership_dict = {
+        'high': membership_high,
+        'medium': membership_medium,
+        'low': membership_low
+    }
+
+    return membership_dict
+
+def health_membership(health_expense, income):
+    high_expenses = triangular_sigmoid(0.05 * income, 0.1 * income)  # Adjusted for high income
+    medium_expenses = triangular_sigmoid(0.02 * income, 0.05 * income)  # Adjusted for medium income
+    low_expenses = triangular_sigmoid(0, 0.02 * income)  # Adjusted for low income
+
+    membership_high = high_expenses(health_expense)
+    membership_medium = medium_expenses(health_expense)
+    membership_low = low_expenses(health_expense)
+
+    membership_dict = {
+        'high': membership_high,
+        'medium': membership_medium,
+        'low': membership_low
+    }
+
+    return membership_dict
+
+def utilities_membership(utilities_expense, income):
+    high_expenses = triangular_sigmoid(0.05 * income, 0.1 * income)  # Adjusted for high income
+    medium_expenses = triangular_sigmoid(0.02 * income, 0.05 * income)  # Adjusted for medium income
+    low_expenses = triangular_sigmoid(0, 0.02 * income)  # Adjusted for low income
+
+    membership_high = high_expenses(utilities_expense)
+    membership_medium = medium_expenses(utilities_expense)
+    membership_low = low_expenses(utilities_expense)
+
+    membership_dict = {
+        'high': membership_high,
+        'medium': membership_medium,
+        'low': membership_low
+    }
+
+    return membership_dict
+
+def transport_membership(transport_expense, income):
+    high_expenses = triangular_sigmoid(0.05 * income, 0.1 * income)  # Adjusted for high income
+    medium_expenses = triangular_sigmoid(0.02 * income, 0.05 * income)  # Adjusted for medium income
+    low_expenses = triangular_sigmoid(0, 0.02 * income)  # Adjusted for low income
+
+    membership_high = high_expenses(transport_expense)
+    membership_medium = medium_expenses(transport_expense)
+    membership_low = low_expenses(transport_expense)
+
+    membership_dict = {
+        'high': membership_high,
+        'medium': membership_medium,
+        'low': membership_low
+    }
+
+    return membership_dict
+
+def personal_membership(personal_expense, income):
+    high_expenses = triangular_sigmoid(0.05 * income, 0.1 * income)  # Adjusted for high income
+    medium_expenses = triangular_sigmoid(0.02 * income, 0.05 * income)  # Adjusted for medium income
+    low_expenses = triangular_sigmoid(0, 0.02 * income)  # Adjusted for low income
+
+    membership_high = high_expenses(personal_expense)
+    membership_medium = medium_expenses(personal_expense)
+    membership_low = low_expenses(personal_expense)
+
+    membership_dict = {
+        'high': membership_high,
+        'medium': membership_medium,
+        'low': membership_low
+    }
+
+    return membership_dict
+
+def entertainment_membership(entertainment_expense, income):
+    high_expenses = triangular_sigmoid(0.03 * income, 0.08 * income)  # Adjusted for high income
+    medium_expenses = triangular_sigmoid(0.01 * income, 0.03 * income)  # Adjusted for medium income
+    low_expenses = triangular_sigmoid(0, 0.01 * income)  # Adjusted for low income
+
+    membership_high = high_expenses(entertainment_expense)
+    membership_medium = medium_expenses(entertainment_expense)
+    membership_low = low_expenses(entertainment_expense)
+
+    membership_dict = {
+        'high': membership_high,
+        'medium': membership_medium,
+        'low': membership_low
+    }
+
+    return membership_dict
+
+def vices_membership(vices_expense, income):
+    high_expenses = triangular_sigmoid(0.02 * income, 0.05 * income)  # Adjusted for high income
+    medium_expenses = triangular_sigmoid(0.01 * income, 0.02 * income)  # Adjusted for medium income
+    low_expenses = triangular_sigmoid(0, 0.01 * income)  # Adjusted for low income
+
+    membership_high = high_expenses(vices_expense)
+    membership_medium = medium_expenses(vices_expense)
+    membership_low = low_expenses(vices_expense)
+
+    membership_dict = {
+        'high': membership_high,
+        'medium': membership_medium,
+        'low': membership_low
+    }
+
+    return membership_dict
+
+def other_membership(other_expense, income):
+    high_expenses = triangular_sigmoid(0.02 * income, 0.05 * income)  # Adjusted for high income
+    medium_expenses = triangular_sigmoid(0.01 * income, 0.02 * income)  # Adjusted for medium income
+    low_expenses = triangular_sigmoid(0, 0.01 * income)  # Adjusted for low income
+
+    membership_high = high_expenses(other_expense)
+    membership_medium = medium_expenses(other_expense)
+    membership_low = low_expenses(other_expense)
+
+    membership_dict = {
+        'high': membership_high,
+        'medium': membership_medium,
+        'low': membership_low
+    }
+
+    return membership_dict
+
+def total_economies_membership(total_economies):
+    """
+    Calculate the membership degrees for the emergency fund based on the total amount accumulated over time.
+
+    Args:
+    - total_economies (float): Total amount accumulated in the emergency fund over time.
+
+    Returns:
+    - dict: A dictionary containing the membership degrees for high, medium, and low emergency fund.
+    """
+    # Define the ranges for high, medium, and low emergency fund based on the total amount accumulated
+    high_economies_range = (50000, 150000)  # Example ranges for high emergency fund
+    medium_economies_range = (20000, 50000)  # Example ranges for medium emergency fund
+    low_economies_range = (0, 20000)  # Example ranges for low emergency fund
+
+    # Calculate membership degrees for high, medium, and low emergency fund
+    high_economies = triangular_sigmoid(*high_economies_range)
+    medium_economies = triangular_sigmoid(*medium_economies_range)
+    low_economies = triangular_sigmoid(*low_economies_range)
+
+    membership_high = high_economies(total_economies)
+    membership_medium = medium_economies(total_economies)
+    membership_low = low_economies(total_economies)
+
+    # Create a dictionary to store the percentages of emergency fund belonging to each income category
+    membership_dict = {
+        'high': membership_high,
+        'medium': membership_medium,
+        'low': membership_low
+    }
+
+    return membership_dict
+
+#computes how much progress you have made towards achieving your goal
+def goal_membership(total_savings, target_amount):
+    """
+    Calculate the membership degrees for the goal based on the total savings and target amount.
+
+    Args:
+    - total_savings (float): Total savings accumulated for the goal until the present moment.
+    - target_amount (float): Target amount for the goal.
+
+    Returns:
+    - dict: A dictionary containing the membership degrees for high, medium, and low progress towards the goal.
+    """
+    # Calculate the progress towards the goal
+    progress = total_savings / target_amount
+
+    # Define the ranges for high, medium, and low progress towards the goal
+    high_progress_range = (0.8, 1)  # Adjusted for high progress
+    medium_progress_range = (0.5, 0.8)  # Adjusted for medium progress
+    low_progress_range = (0, 0.5)  # Adjusted for low progress
+
+    # Calculate membership degrees for high, medium, and low progress towards the goal
+    high_progress_membership = triangular_sigmoid(*high_progress_range)
+    medium_progress_membership = triangular_sigmoid(*medium_progress_range)
+    low_progress_membership = triangular_sigmoid(*low_progress_range)
+
+    membership_high = high_progress_membership(progress)
+    membership_medium = medium_progress_membership(progress)
+    membership_low = low_progress_membership(progress)
+
+    # Create a dictionary to store the percentages of progress towards the goal belonging to each category
+    membership_dict = {
+        'high': membership_high,
+        'medium': membership_medium,
+        'low': membership_low
+    }
+
+    return membership_dict
 
 
 
+from django.shortcuts import render
+from .models import Income, TotalExpense
+from django.db.models import Sum
+from django.utils import timezone
 
+def income_expense_chart(request):
+    now = datetime.now()
+    month = now.month
+    year = now.year
 
+    # Retrieve total income
+    income = Income.objects.filter(user=request.user, month=month, year=year).last()
+    total_income = income.total_amount
 
+    # Retrieve total expenses
+    expenses = TotalExpense.objects.filter(user=request.user, month=month, year=year).last()
+    total_expenses = expenses.total_expenses
 
-
-
+    return render(request, 'accounts/income_expense_chart.html', {'total_income': total_income, 'total_expenses': total_expenses})

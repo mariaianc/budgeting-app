@@ -82,3 +82,10 @@ def split_income(request):
         return render(request, 'accounts/split_income.html')
     except TemplateDoesNotExist :
         return render(request, 'main_index_not_fount.html')
+    
+
+def income_expense_chart(request):
+    try:
+        return render(request, 'accounts/income_expense_chart.html')
+    except TemplateDoesNotExist :
+        return render(request, 'main_index_not_fount.html')

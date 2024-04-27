@@ -38,6 +38,7 @@ urlpatterns = [
    #path('test_openai_api/', test_openai_api_key, name='test_openai_api_key'),
    path('chat/', chat_view, name='chat_view'),
    path('split_income/', split_income, name='split_income'),
+   path('income_expense_chart/', income_expense_chart, name='income_expense_chart'),
 
-   
+
 ] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT) #pt upload images, automatically creates an url for the database.

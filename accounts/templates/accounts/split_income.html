@@ -7,47 +7,59 @@
     
 </head>
 <body>
+
+    <div id="recommendation">
+        <h2>Recommendation:</h2>
+        <p>{{ recommendation1 }}</p>
+        <br>
+        <p>{{ recommendation2 }}</p>
+    </div>
+
+
     <h1>Split Your Income</h1>
 
     <p>Last Month's Remaining Income: <span id="income_left">{{ last_month_income.income_left }}</span></p>
 
-    <form method="post" oninput="updateOtherInput()">
+    <form id="income_form" method="post">
         {% csrf_token %}
         <label for="economies_amount">Amount for Economies:</label>
-        <input type="number" id="economies_amount" name="economies_amount" min="0"  required>
+        <input type="number" id="economies_amount" name="economies_amount" min="0" oninput="updateGoalAmount()">
         <br>
         <label for="goal_amount">Amount for Goal:</label>
-        <input type="number" id="goal_amount" name="goal_amount" min="0"  required>
+        <input type="number" id="goal_amount" name="goal_amount" min="0" oninput="updateEconomiesAmount()">
         <br>
         <button type="submit">Split Income</button>
     </form>
 
     <script>
-        // Function to calculate and fill in the remaining value in the other input field
-        function updateOtherInput() {
-            var incomeLeft = document.getElementById("income_left").innerText;
-            var economiesAmount = document.getElementById("economies_amount").value;
-            var goalAmount = document.getElementById("goal_amount").value;
-            console.log(income_left);
-            console.log(economies_amount);
-            console.log(goal_amount);
-    
-            if (!isNaN(economiesAmount)) {
-                document.getElementById("goal_amount").value = (incomeLeft - economiesAmount);
-                //document.getElementById("economies_amount").value = (economiesAmount);
-            } 
-            else if (!isNaN(goalAmount)) {
-                document.getElementById("economies_amount").value = (incomeLeft - goalAmount);
-                //document.getElementById("goal_amount").value = (goalAmount);
-            }
+        function updateGoalAmount() {
+            var economiesAmount = parseFloat(document.getElementById('economies_amount').value);
+            var incomeLeft = parseFloat(document.getElementById('income_left').innerText);
+            var goalAmount = incomeLeft - economiesAmount;
             
+            if (isNaN(goalAmount)) {
+                document.getElementById('goal_amount').value = '';
+            } else {
+                document.getElementById('goal_amount').value = goalAmount;
+            }
         }
-    
-        // Add event listeners to input fields to trigger updateOtherInput function
-        {% comment %} document.getElementById("economies_amount").addEventListener("input", updateOtherInput);
-        document.getElementById("goal_amount").addEventListener("input", updateOtherInput); {% endcomment %}
+
+        function updateEconomiesAmount() {
+            var goalAmount = parseFloat(document.getElementById('goal_amount').value);
+            var incomeLeft = parseFloat(document.getElementById('income_left').innerText);
+            var economiesAmount = incomeLeft - goalAmount;
+            
+            if (isNaN(economiesAmount)) {
+                document.getElementById('economies_amount').value = '';
+            } else {
+                document.getElementById('economies_amount').value = economiesAmount;
+            }
+        }
+
+        document.getElementById('economies_amount').addEventListener('input', updateGoalAmount);
+        document.getElementById('goal_amount').addEventListener('input', updateEconomiesAmount);
+
     </script>
-    
 
 </body>
 </html>
