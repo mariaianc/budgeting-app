@@ -150,8 +150,6 @@ class GoalSavings(models.Model):
 
         return goal_savings_obj
 
-
-
 class Economies(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     month = models.IntegerField()
