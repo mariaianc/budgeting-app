@@ -82,29 +82,34 @@ class RegisterForm(UserCreationForm):
     
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        if not email:
-            raise ValidationError('Email field is required.')
-        # if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
-        #     raise ValidationError('Please enter a valid email address.')
         if User.objects.filter(email=email).exists():
             raise ValidationError('Email is used in another account.')
         return email
-    
+
     def clean_password1(self):
         password1 = self.cleaned_data['password1']
         errors = []
-        errors.append('Password must be at least 8 characters long.''\n')
-        errors.append('Password must contain at least one letter.''\n')
-        errors.append('Password must contain at least one digit.''\n')
-        errors.append('Password must contain at least one special character.''\n')
+
+        # Check for minimum length
         if len(password1) < 8:
+            errors.append('Password must be at least 8 characters long.')
+
+        # Check for at least one letter
+        if not any(char.isalpha() for char in password1):
+            errors.append('Password must contain at least one letter.')
+
+        # Check for at least one digit
+        if not any(char.isdigit() for char in password1):
+            errors.append('Password must contain at least one digit.')
+
+        # Check for at least one special character
+        if not any(not char.isalnum() for char in password1):
+            errors.append('Password must contain at least one special character.')
+
+        # Raise validation error with combined error messages
+        if errors:
             raise ValidationError(errors)
-        if not re.search(r'[a-zA-Z]', password1):
-            raise ValidationError(errors)
-        if not re.search(r'\d', password1):
-            raise ValidationError(errors)
-        if not re.search(r'[^a-zA-Z0-9]', password1):
-            raise ValidationError(errors)
+
         return password1
     
     def clean_password2(self):

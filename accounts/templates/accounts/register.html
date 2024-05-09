@@ -20,21 +20,55 @@
       {% csrf_token %}
     <div class="textbox-container">
         <input type="text" placeholder="Username" name="username">
+
+        {% if form.errors.username %}
+                <ul class="errorlist">
+                    {% for error in form.errors.username %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
     </div>
     <div class="textbox-container">
         <input type="text" placeholder="First name" name="first_name">
+
+        {% if form.first_name.errors %}
+            <div class="error">{{ form.first_name.errors }}</div>
+        {% endif %}
+
     </div>
     <div class="textbox-container">
         <input type="text" placeholder="Last name" name="last_name">
+
+        {% if form.last_name.errors %}
+            <div class="error">{{ form.last_name.errors }}</div>
+        {% endif %}
+
     </div>
     <div class="textbox-container">
         <input type="email" placeholder="Email address" name="email">
+
+        {% if form.email.errors %}
+            <div class="error">{{ form.email.errors }}</div>
+        {% endif %}
+
     </div>
     <div class="textbox-container">
         <input type="password" placeholder="Create a password" name="password1">
+
+        {% if form.password1.errors %}
+            <div class="error">{{ form.password1.errors }}</div>
+        {% endif %}
+
     </div>
     <div class="textbox-container">
         <input type="password" placeholder="Confirm your password" name="password2">
+
+        {% if form.password2.errors %}
+            <div class="error">{{ form.password2.errors }}</div>
+        {% endif %}
+
     </div>
     
     <button type="submit" class="button">Submit</button>

@@ -1,0 +1,8 @@
+{
+    "python.testing.pytestEnabled": false,
+    "python.testing.unittestEnabled": true,
+    "python.testing.unittestArgs": [
+        "-v",
+        "accounts\tests.py"
+    ]
+}

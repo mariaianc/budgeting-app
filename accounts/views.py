@@ -16,15 +16,12 @@ def register(request):
             #messages.success(request, 'Registration successful. Welcome!') #mesajele astea apare in admin interface
             return redirect('/login/')  # Redirect to the home page after successful registration
         else:
-            # Form is invalid, so render the form with errors
-            #messages.error(request, 'Error in registration. Please correct the form.')
-            print(form.errors)  # Print form errors to console for debugging
+            #print("Form errors:", form.errors)
             return render(request, 'accounts/register.html', {'form': form})   # Pass the form with errors to the template
 
     else:
         form = RegisterForm()  #daca metoda nu e POST se creaza un empty form 
-
-    return render(request, 'accounts/register.html', {'form': form})
+        return render(request, 'accounts/register.html', {'form': form})
 
 
 def login(request):
@@ -41,19 +38,19 @@ def login(request):
                 auth_login(request, user)
                 messages.success(request, 'Login successful.')  # Display success message
                 return redirect('/home/')  # Redirect to the home page after login
-            else:
-                # Authentication failed, display error message
-                messages.error(request, 'Invalid username or password.')
-                print(form.errors)  # Print form errors to console for debugging
-                return render(request, 'accounts/login.html', {'form': form})   # Pass the form with errors to the template
+        else:
+            # # Authentication failed, display error message
+            # messages.error(request, 'Invalid username or password.')
+            # print(form.errors)  # Print form errors to console for debugging
+            return render(request, 'accounts/login.html', {'form': form})   # Pass the form with errors to the template
     else:
         form = LoginForm()  # Create a new instance of the LoginForm
 
-    # Check if there is a registration success message in the session
-    registration_success_message = request.session.get('registration_success_message')
-    if registration_success_message:
-        messages.success(request, registration_success_message)
-        del request.session['registration_success_message']  # Remove the message from the session after displaying it
+    # # Check if there is a registration success message in the session
+    # registration_success_message = request.session.get('registration_success_message')
+    # if registration_success_message:
+    #     messages.success(request, registration_success_message)
+    #     del request.session['registration_success_message']  # Remove the message from the session after displaying it
 
     return render(request, 'accounts/login.html', {'form': form})
 
@@ -136,11 +133,13 @@ def income(request):
     return render(request, 'accounts/income.html', context)
 
 
-@login_required
-def income_details(request):
-    cash_incomes = CashIncome.objects.filter(income__user=request.user, amount__gt=0).order_by('-day', '-hour') #income__user is essentially telling Django to follow the ForeignKey relationship from CashIncome or CardIncome to the Income model, and then from the Income model to the User model, allowing us to filter incomes based on the user they belong to.
-    card_incomes = CardIncome.objects.filter(income__user=request.user, amount__gt=0).order_by('-day', '-hour')
-    return render(request, 'accounts/income_details.html', {'cash_incomes': cash_incomes, 'card_incomes': card_incomes})
+#vad daca o integrez in frontend sau o sterg complet, verifica cash si card ca se salveaza de 2 ori
+
+# @login_required
+# def income_details(request):
+#     cash_incomes = CashIncome.objects.filter(income__user=request.user, amount__gt=0).order_by('-day', '-hour') #income__user is essentially telling Django to follow the ForeignKey relationship from CashIncome or CardIncome to the Income model, and then from the Income model to the User model, allowing us to filter incomes based on the user they belong to.
+#     card_incomes = CardIncome.objects.filter(income__user=request.user, amount__gt=0).order_by('-day', '-hour')
+#     return render(request, 'accounts/income_details.html', {'cash_incomes': cash_incomes, 'card_incomes': card_incomes})
 
 
 from .models import Expense, TotalExpense
@@ -154,8 +153,8 @@ def create_expense(request):
     month = now.month
     year = now.year
 
-    # Check if TotalExpense object for the current month and year exists
-    total_expense, created = TotalExpense.objects.get_or_create(
+    # Check if TotalExpense object for the current month and year exists          , created langa total expense
+    total_expense= TotalExpense.objects.get_or_create(
         user=request.user,
         month=month,
         year=year,
@@ -173,18 +172,17 @@ def create_expense(request):
         }
     )
 
-
     if request.method == 'POST':
-        print("POST")
+        #print("POST")
         form = ExpenseInputForm(request.POST)
         if form.is_valid():
-            expense = form.save(commit=False)
+            expense = form.save(commit=False)   #necesar ca userul sa nu fie null, altfel primesti eroare
             # Set the user for the expense based on the current user
             expense.user = request.user
             # Save the expense object to the database
             expense.save()
 
-            income = Income.objects.get(user=request.user)
+            income = Income.objects.get(user=request.user, month = month) # problema cu luatul unui sg income din baza de date
             income.income_left = income.income_left - expense.value
             income.save()
             # Update total expenses
@@ -194,19 +192,19 @@ def create_expense(request):
             #return redirect('expense_list')  # Redirect to a page showing the list of expenses
     
     elif request.method == 'GET':
-        print("GET")
+        #print("GET")
         total_amount = request.GET.get('total_amount2')
-        print("1 Total Amount:", total_amount)
+        #print("1 Total Amount:", total_amount)
         total_amount = Decimal(total_amount) if total_amount else None
-        print("2 Total Amount:", total_amount)
+        #print("2 Total Amount:", total_amount)
         form = ExpenseInputForm(initial={'value': total_amount})
 
     # Get total expenses for the current user
-    total_expenses = TotalExpense.objects.get(user=request.user, month=month, year=year)
+    total_expense = TotalExpense.objects.get(user=request.user, month=month, year=year)
 
-    print(total_expenses)
+    print(total_expense)
     
-    return render(request, 'accounts/expense.html', {'form': form, 'total_expenses': total_expenses})
+    return render(request, 'accounts/expense.html', {'form': form, 'total_expenses': total_expense})
 
 from django.utils import timezone
 
@@ -226,11 +224,11 @@ def update_total_expenses(user, month, year):
         'other': 0,
     }
 
-    # Calculate total expenses for each category
+    # Calculate total expenses for each category si le stribuie dictionarului de sus
     for expense in user_expenses:
         total_expenses[expense.category] += expense.value
 
-    # Check if TotalExpense object already exists for the user, month, and year
+    # Check if TotalExpense object already exists for the user, month, and year; vede daca are obiect de total expenses asociat, daca nu at il creeaza
     total_expense, created = TotalExpense.objects.get_or_create(
         user=user,
         month=month,
@@ -356,12 +354,12 @@ def create_goal(request):
     return render(request, 'accounts/goal.html', {'form': form})
 
 
-
-from .models import Goal
-def all_goals(request):
-    # Retrieve all goals from the database
-    goals = Goal.objects.filter(user=request.user)  # Assuming each goal is associated with a user
-    return render(request, 'accounts/all_goals.html', {'goals': goals})
+#tot pt frontend
+# from .models import Goal
+# def all_goals(request):
+#     # Retrieve all goals from the database
+#     goals = Goal.objects.filter(user=request.user)  # Assuming each goal is associated with a user
+#     return render(request, 'accounts/all_goals.html', {'goals': goals})
 
 
 from django.shortcuts import render, redirect
@@ -379,38 +377,40 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
-# Function to test OpenAI API key
-def test_openai_api_key(request):
-    # Get API key from environment variables
-    api_key = os.getenv("OPENAI_API_KEY")
-    if api_key is None:
-        return HttpResponse("Error: OpenAI API key not found in environment variables.")
 
-    # Create OpenAI client instance with API key
-    client = OpenAI(api_key=api_key)
+#numa pt testare cheie
+# # Function to test OpenAI API key
+# def test_openai_api_key(request):
+#     # Get API key from environment variables
+#     api_key = os.getenv("OPENAI_API_KEY")
+#     if api_key is None:
+#         return HttpResponse("Error: OpenAI API key not found in environment variables.")
 
-    # Test API key by calling a simple API method
-    try:
-        # Call OpenAI API with a simple message and specify the model
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo-0125",
-            messages=[
-                {"role": "system", "content": "You are a budgeting analyst."},
-                {"role": "user", "content": "how to maximize my savings?"}
-            ],
-            max_tokens=100  # Adjust the maximum number of tokens as needed
-        )
+#     # Create OpenAI client instance with API key
+#     client = OpenAI(api_key=api_key)
+
+#     # Test API key by calling a simple API method
+#     try:
+#         # Call OpenAI API with a simple message and specify the model
+#         response = client.chat.completions.create(
+#             model="gpt-3.5-turbo-0125",
+#             messages=[
+#                 {"role": "system", "content": "You are a budgeting analyst."},
+#                 {"role": "user", "content": "how to maximize my savings?"}
+#             ],
+#             max_tokens=100  # Adjust the maximum number of tokens as needed
+#         )
         
-        # Accessing the completion text from the response
-        completion_text = response.choices[0].message.content
+#         # Accessing the completion text from the response
+#         completion_text = response.choices[0].message.content
         
-        # Render a template with the completion text
-        try:
-            return render(request, 'accounts/openai_result.html', {'completion_text': completion_text})
-        except TemplateDoesNotExist as e:
-            return HttpResponse("Error: TemplateDoesNotExist - " + str(e))
-    except Exception as e:
-        return HttpResponse("Error: " + str(e) + ". API key is not working.")
+#         # Render a template with the completion text
+#         try:
+#             return render(request, 'accounts/openai_result.html', {'completion_text': completion_text})
+#         except TemplateDoesNotExist as e:
+#             return HttpResponse("Error: TemplateDoesNotExist - " + str(e))
+#     except Exception as e:
+#         return HttpResponse("Error: " + str(e) + ". API key is not working.")
 
 
 #ASTA MERGE, ITI RASPUNDE LA FIECARE CHESTIE DIN CHAT, TREBUIE SA VAD CUM IL FAC SA FIE CHAT FARA SA ISI DEA RESET PAGINA 
