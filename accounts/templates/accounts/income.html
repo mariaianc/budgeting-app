@@ -1,41 +1,74 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'accounts/income.css' %}">
     <title>Income Input</title>
 </head>
 <body>
-    <h1>Enter Cash and Card Income</h1>
 
-    <form method="POST">
-        <!-- CSRF Token for security -->
-        {% csrf_token %}
-        
-        <!-- Display form errors if any -->
-        {% if form.errors %}
-            <ul>
-                {% for field in form %}
-                    {% for error in field.errors %}
-                        <li>{{ error }}</li>
+    <div class = "income-title">
+        <h1>Add Income</h1>
+    </div>
+    <div class="form-container">
+        <form method="POST">
+            <!-- CSRF Token for security -->
+            {% csrf_token %}
+            
+            <!-- Display form errors if any -->
+            {% if form.errors %}
+                <ul>
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
                     {% endfor %}
-                {% endfor %}
-            </ul>
-        {% endif %}
+                </ul>
+            {% endif %}
 
-        <!-- Include the form fields -->
-        {{ form.as_p }}  <!--djando reda formul definit in forms aici si transcrie chestiile din el sub forma de paragrafe <p>, formul asta e doar ca sa poata lua input data de la user si sa il trimita la server-->
+                <br><br><br> <!-- ca sa lase spatiu deasupra -->
+            <div class="form-group">
+                <div class="label-container">
+                    <label for="id_cash_amount">Cash </label>
+                </div>
+                <div class="textbox-container">
+                    <input type="number" id="id_cash_amount" name="cash_amount" class="textbox">
+                </div>
+            </div>
+        
+            <div class="form-group">
+                <div class="label-container">
+                    <label for="id_card_amount">Card </label>
+                </div>
+                <div class="textbox-container">
+                    <input type="number" id="id_card_amount" name="card_amount" class="textbox">
+                </div>
+            </div>
 
-        <!-- Submit Button -->
-        <button type="submit" name="action" value="compute">Compute Total Income</button>
+            <div class="button-container">
+                <button type="submit" name="action" value="compute" class="button">
+                    <span class="button-label">Compute</span>
+                </button>
+                <button type="submit" name="action" value="undo" class="button">
+                    <span class="button-label">Undo</span>
+                </button>
+            </div>
+            
+        </form>
 
-        <!-- Undo Button -->
-        <button type="submit" name="action" value="undo">Undo Last Action</button>
-    </form>
-
-    <!-- Display Total Income -->
-    <h2>Total Income:</h2>
-    <p>{{ total_income  }}</p> 
+        <div class="total-income-label">
+            <span>Total Income:</span>
+            <p class="total-income-text">{{ total_income }}</p>
+            <span>$</span>
+        </div>
+        <a href="{% url 'home' %}">Go to Home Page</a>
+    </div>
 
     <!-- JavaScript to enable/disable Undo button -->
     <script>

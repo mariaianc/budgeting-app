@@ -1,35 +1,101 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'accounts/split_income.css' %}">
     <title>Split Income</title>
     
 </head>
 <body>
 
-    <div id="recommendation">
-        <h2>Recommendation:</h2>
-        <p>{{ recommendation1 }}</p>
-        <br>
-        <p>{{ recommendation2 }}</p>
+    <div class = "income-title">
+        Split Remaining Income
     </div>
 
 
-    <h1>Split Your Income</h1>
+    <div class = "remainings-grouped">
+        <div class = "remainings">
+            Last month remainings:&nbsp;&nbsp;&nbsp; <span id="income_left">{{ last_month_income.income_left }} $</span>
+        </div>
+    </div>
 
-    <p>Last Month's Remaining Income: <span id="income_left">{{ last_month_income.income_left }}</span></p>
+    {% comment %} {{ last_month_income.income_left }} {% endcomment %}
 
     <form id="income_form" method="post">
         {% csrf_token %}
-        <label for="economies_amount">Amount for Economies:</label>
-        <input type="number" id="economies_amount" name="economies_amount" min="0" oninput="updateGoalAmount()">
-        <br>
+
+        <div class = "big-content">
+            <div class = "content-split">
+                <div class = "lablesitextbox-group">
+                    <div class = "label">
+                        <label for="economies_amount">Economies</label>
+                    </div>
+                    <div class = "textbox">
+                        <input type="number" id="economies_amount" name="economies_amount" min="0" oninput="updateGoalAmount()" class = "textbox">
+                    </div>
+                    <div class = "label">
+                        Total: {{ total_economies }} $
+                    </div>
+                </div>
+
+                <div class = "lablesitextbox-group">
+                    <div class = "label">
+                        <label for="goal_amount">Goal</label>
+                    </div>
+                    <div class = "textbox">
+                        <input type="number" id="goal_amount" name="goal_amount" min="0" oninput="updateEconomiesAmount()" class = "textbox">
+                    </div>
+                    <div class = "label">
+                        Total: {{ total_goal_savings }} $
+                    </div>
+                </div>
+            </div>
+
+            <div class = "content-split">
+                <button type="submit" class="button">
+                    <span class="button-label">Split</span>
+                </button>
+                <a href="{% url 'home' %}" style="margin-left: 60px;">Go to Home Page</a>
+
+
+            </div>
+
+        </div>
+
+
+        {% comment %} <br>
         <label for="goal_amount">Amount for Goal:</label>
         <input type="number" id="goal_amount" name="goal_amount" min="0" oninput="updateEconomiesAmount()">
-        <br>
-        <button type="submit">Split Income</button>
+        <br> {% endcomment %}
+        {% comment %} <button type="submit">Split Income</button> {% endcomment %}
     </form>
+
+    <div id="recommendation">
+
+        <div class = "title-recommendation">
+            Recommendation with numeric values:
+        </div>
+        <div class = "recommendation">
+        {{ recommendation1 }}
+        </div>
+
+        <div class = "title-recommendation">
+            Recommendation with fuzzy logic:
+        </div>
+        <div class = "recommendation">
+            {{ recommendation2 }}
+        </div>
+    </div>
+
+
+
+
 
     <script>
         function updateGoalAmount() {

@@ -1,49 +1,94 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'accounts/expense.css' %}">
     <title>Create Expense</title>
 </head>
 <body>
-    <h1>Create Expense</h1>
-    
-    <form method="post">
-        {% csrf_token %}
-        <label for="id_value">Value:</label><br>
-        {{ form.value }}
-        <br>
-        <br> 
+    <div class="form-container">
+        <div class="form-title">
+            <span>Add Expense</span>
+        </div>
+        <form method="post">
+            {% csrf_token %}
 
-        {% comment %} <label for="id_value">Value:</label><br>
-        {% if form.value.value %}
-        <input type="text" name="value" value="{{ form.value.value }}">
-        {% else %}
-        <input type="text" name="value">
-        {% endif %}
-        <br><br> {% endcomment %}
-        <label for="id_type">Type:</label><br>
-        {{ form.type }}
-        <br>
-        <label for="id_frequency">Frequency:</label><br>
-        {{ form.frequency }}
-        <br>
-        <label for="id_category">Category:</label><br>
-        {{ form.category }}
-        <br>
-        <button type="submit">Save Expense</button>
-    </form>
+        
+            <div class="form-element">
+                <div class="form-group">
+                    <label for="id_value" class="form-label">value</label>
 
-    <h2>Total Expenses</h2>
-    <p>Housing: ${{ total_expenses.total_housing_expense }}</p>
-    <p>Food: ${{ total_expenses.total_food_expense }}</p>
-    <p>Health: ${{ total_expenses.total_health_expense }}</p>
-    <p>Utilities: ${{ total_expenses.total_utilities_expense }}</p>
-    <p>Transport: ${{ total_expenses.total_transport_expense }}</p>
-    <p>Personal: ${{ total_expenses.total_personal_expense }}</p>
-    <p>Entertainment: ${{ total_expenses.total_entertainment_expense }}</p>
-    <p>Vices: ${{ total_expenses.total_vices_expense }}</p>
-    <p>Other: ${{ total_expenses.total_other_expense }}</p>
-    <p>Total Expenses: ${{ total_expenses.total_expenses }}</p>
+                    <div class="textbox-container">
+                        <input type="text" id="id_value" name="value" class="form-textbox" value="{{ form.value.value }}">
+                    </div>
+                    
+                </div>
+            </div>
+
+            {% comment %} <label for="id_type">Type:</label><br>
+            {{ form.type }} {% endcomment %}
+
+        <div class = "flex-container">
+            <div class="form-element2">
+                <div class="form-group2">
+                    <label for="id_type" class="form-label-type">Importance:</label>
+                    <div class="radio-buttons-container">
+                        {{ form.type }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-element2">
+                <div class="form-group2">
+                    <label for="id_type" class="form-label-type">Frequency:</label>
+                    <div class="radio-buttons-container">
+                        {{ form.frequency }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-element3">
+                <div class="form-group3">
+                    <label for="id_type" class="form-label-type">Category:</label>
+                    <div class="radio-buttons-container">
+                        {{ form.category }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-element3">
+                <div class="form-group3">
+                    <button type="submit" class="custom-button">Save</button>
+                </div>
+            </div>
+        </div>
+
+        </form>
+    </div>
+
+    <!-- Add this div after the form-container -->
+<div class="expenses-container">
+    <h2>Total:&nbsp;&nbsp;${{ total_expenses.total_expenses }}</h2>
+    <p>Housing:&nbsp; ${{ total_expenses.total_housing_expense }}</p>
+    <p>Food: &nbsp;${{ total_expenses.total_food_expense }}</p>
+    <p>Health:&nbsp; ${{ total_expenses.total_health_expense }}</p>
+    <p>Utilities: &nbsp;${{ total_expenses.total_utilities_expense }}</p>
+    <p>Transport:&nbsp; ${{ total_expenses.total_transport_expense }}</p>
+    <p>Personal: &nbsp;${{ total_expenses.total_personal_expense }}</p>
+    <p>Entertainment:&nbsp; ${{ total_expenses.total_entertainment_expense }}</p>
+    <p>Vices:&nbsp; ${{ total_expenses.total_vices_expense }}</p>
+    <p>Other:&nbsp; ${{ total_expenses.total_other_expense }}</p>
+
+    <br>
+    <a href="{% url 'home' %}">Go to Home Page</a>
+
+</div>
+
 </body>
 </html>

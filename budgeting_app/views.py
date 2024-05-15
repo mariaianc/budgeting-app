@@ -89,3 +89,10 @@ def income_expense_chart(request):
         return render(request, 'accounts/income_expense_chart.html')
     except TemplateDoesNotExist :
         return render(request, 'main_index_not_fount.html')
+    
+
+def overview(request):
+    try:
+        return render(request, 'accounts/overview.html')
+    except TemplateDoesNotExist :
+        return render(request, 'main_index_not_fount.html')

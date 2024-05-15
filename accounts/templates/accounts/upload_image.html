@@ -1,38 +1,64 @@
+{% load static %}
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'accounts/image.css' %}">
     <title>Upload Image</title>
 </head>
 <body>
-    <h2>Upload Image</h2>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Upload</button>
-    </form>
-    
-    <div>
-        <h3>Uploaded Receipt Items</h3>
-        {% for item in formatted_data %}
-            <p>{{ item }}</p>
-        {% endfor %}
+
+    <div class="title-section">
+        <h1>Upload Receipt</h1> <!-- Adjust as needed -->
     </div>
 
-    <div>
-        <p>{{ separator }}</p>
+    <div class="content-section">
+        <div class="left-section">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="button-left">
+                    <label for="id_image" class="file-input">Choose File</label>
+                    <input type="file" name="image" accept="image/*" required="" id="id_image" class="hidden">
+                </div>                
+                    <button type="submit" class="button-left">Scan Image</button>
+            </form>
+
+            <form action="{% url 'create_expense' %}" method="get">
+                {% csrf_token %}
+                <input type="hidden" name="total_amount2" value="{{ total_amount2 }}">
+                <button type="submit" class="button-left">Create Expense</button>
+            </form>
+            <br>
+            <a href="{% url 'home' %}">Go to Home Page</a>
+
+        </div>
+        
+        
+            <div class="right-section">
+                <div class = "receipt">
+                    <p> Receipt content: </p>
+                    <div>
+                        {% for item in formatted_data %}
+                            <p>{{ item }}</p>
+                        {% endfor %}
+                    </div>
+
+                    <div>
+                        <p>{{ separator }}</p>
+                    </div>
+
+                    <div>
+                        <p>{{ total_amount }}</p>
+                    </div>
+                </div>
+            </div>
+        
     </div>
-
-    <div>
-        <h3>Total Amount</h3>
-        <p>{{ total_amount }}</p>
-    </div>
-
-    <form action="{% url 'create_expense' %}" method="get">
-        {% csrf_token %}
-        <input type="hidden" name="total_amount2" value="{{ total_amount2 }}">
-        <button type="submit">Create Expense</button>
-    </form>
-
 </body>
 </html>

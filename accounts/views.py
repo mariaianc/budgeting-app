@@ -195,7 +195,7 @@ def create_expense(request):
         #print("GET")
         total_amount = request.GET.get('total_amount2')
         #print("1 Total Amount:", total_amount)
-        total_amount = Decimal(total_amount) if total_amount else None
+        total_amount = Decimal(total_amount) if total_amount else ""
         #print("2 Total Amount:", total_amount)
         form = ExpenseInputForm(initial={'value': total_amount})
 
@@ -289,10 +289,10 @@ def upload_image(request):
             #     'recognizer': 'auto',
             # }
             # files = {"file": requests.get(image_url).content}
-            # r = requests.post(receipt_ocr_endpoint, data=payload, files=files)
-            # ocr_result = r.json()
+            #  r = requests.post(receipt_ocr_endpoint, data=payload, files=files)
+            #  ocr_result = r.json()
 
-            # Store JSON response in a file
+            # #Store JSON response in a file
             # with open('ocr_result.json', 'w') as json_file:
             #     json.dump(ocr_result, json_file)
 
@@ -316,7 +316,6 @@ def upload_image(request):
             separator = '*' * 40
             
             return render(request, 'accounts/upload_image.html', {'formatted_data': formatted_data, 'separator': separator, 'total_amount': f"{total_amount}{currency} " , 'total_amount2': total_amount2})
-
     else:
         form = ImageForm()
     return render(request, 'accounts/upload_image.html', {'form': form})
@@ -447,7 +446,7 @@ def chat_view(request):
 
 
 from .forms import SplitIncomeForm  # Import your form class here
-
+# ca sa mearga mai bine, sa pun datele in baza de date pt ultima luna la economies ca sa se vada totalu pana at
 @login_required
 def split_income(request):
     user = request.user
@@ -463,6 +462,21 @@ def split_income(request):
         last_month = month - 1
 
     last_month_income = Income.objects.filter(user=user, month=last_month, year=year).last()
+
+    try:
+        total_economies_last = Economies.objects.get(user=user, month = last_month-1).total_economies
+    except Economies.DoesNotExist:
+        total_economies_last = 0
+
+    try:
+        latest_goal_savings = GoalSavings.objects.filter(goal__user=user, month = last_month-1).latest('id')
+        total_goal_savings_last = latest_goal_savings.total_savings
+    except GoalSavings.DoesNotExist:
+        total_goal_savings_last = 0
+
+
+    recommendation1 = ""  # Initialize with default value
+    recommendation2 = ""  # Initialize with default value
 
     if request.method == 'POST':
         form = SplitIncomeForm(request.POST)
@@ -488,7 +502,10 @@ def split_income(request):
                 year=year,
                 monthly_economies=economies_amount
             )
+            economies.total_economies = total_economies_last + economies_amount
+            economies.save()
             print(economies.monthly_economies)
+            print(economies.total_economies)
 
             goal = Goal.objects.filter(user=user).last()
             if goal.achieved==False:
@@ -498,22 +515,47 @@ def split_income(request):
                     year=year,
                     monthly_savings=goal_amount
                 )
+                goal_savings.total_savings = total_goal_savings_last + goal_amount
+                goal_savings.save()
                 print(goal_savings.monthly_savings)
 
                 # Check if the goal has been achieved
-                goal_savings.total_savings += Decimal(goal_amount)
+                # goal_savings.total_savings += Decimal(goal_amount)
                 if goal_savings.total_savings >= goal.target_amount:
                     goal.achieved = True
                     goal.save()
+
+            # total_economies = Economies.objects.get(user=user, month = last_month).total_economies
+            total_economies = economies.total_economies
+            total_goal_savings = goal_savings.total_savings
+            # latest_goal_savings = GoalSavings.objects.filter(goal__user=user, month = last_month).latest('id')
+            # total_goal_savings = latest_goal_savings.total_savings
             
     else:
         form = SplitIncomeForm()
 
-        recommendation1 = generate_recommendation_numeric(user2)  
-        recommendation2 = generate_recommendation_fuzzy(user2)
 
-    return render(request, 'accounts/split_income.html', {'last_month_income': last_month_income, 'form': form, 'recommendation1': recommendation1, 'recommendation2': recommendation2})
+        # Query updated total_economies and total_goal_savings
+        try:
+            latest_economies = Economies.objects.filter(user=user).latest('id')
+            total_economies = latest_economies.total_economies
+        except Economies.DoesNotExist:
+            total_economies = 0
 
+        try:
+            latest_goal_savings = GoalSavings.objects.filter(goal__user=user).latest('id')
+            total_goal_savings = latest_goal_savings.total_savings
+        except GoalSavings.DoesNotExist:
+            total_goal_savings = 0
+
+    recommendation1 = generate_recommendation_numeric(user2)  
+    recommendation2 = generate_recommendation_fuzzy(user2)
+
+    # recommendation1 = "prima"
+    # recommendation2 = "a doua"
+
+    
+    return render(request, 'accounts/split_income.html', {'last_month_income': last_month_income, 'form': form, 'recommendation1': recommendation1, 'recommendation2': recommendation2, 'total_economies': total_economies, 'total_goal_savings': total_goal_savings})
 
 def generate_recommendation_numeric(user):
     print(user)
@@ -1080,3 +1122,52 @@ def income_expense_chart(request):
     total_expenses = expenses.total_expenses
 
     return render(request, 'accounts/income_expense_chart.html', {'total_income': total_income, 'total_expenses': total_expenses})
+
+
+def overview(request):
+    user = request.user
+    now = datetime.now()
+    month = now.month
+    year = now.year
+
+    income = Income.objects.filter(user=user, month=month, year=year).first()  # Get the user's income object for the current month and year
+
+    # Filter card incomes for the current month
+    card_incomes = CardIncome.objects.filter(income=income, day__month=month, amount__gt=0)
+
+    # Filter cash incomes for the current month
+    cash_incomes = CashIncome.objects.filter(income=income, day__month=month, amount__gt=0)
+
+    # Filter expenses for the current month
+    expenses = Expense.objects.filter(user=user, day__month=month)
+
+    # Get all goals for the user
+    goals = Goal.objects.filter(user=user)
+
+    if month == 1:
+        last_month = 12
+        year -= 1
+    else:
+        last_month = month - 1
+    economies = Economies.objects.filter(user=user, month=last_month, year=year).last()
+
+    goal_savings = GoalSavings.objects.filter(goal__user=user, month=last_month, year=year).last()
+
+    need = goals.last().target_amount - (goal_savings.total_savings if goal_savings else 0)
+
+    tot_expenses = TotalExpense.objects.filter(user=user, month=month, year=year).last()
+    total_expenses = tot_expenses.total_expenses if tot_expenses else 0
+
+    context = {
+        'income': income,
+        'cash_incomes': cash_incomes,
+        'card_incomes': card_incomes,
+        'expenses': expenses,
+        'goals': goals,
+        'economies': economies,
+        'goal_savings' : goal_savings,
+        'need' : need,
+        'total_expenses' : total_expenses
+    }
+    return render(request, 'accounts/overview.html', context)
+

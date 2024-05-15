@@ -1,0 +1,154 @@
+body {
+    /* background: linear-gradient(201deg, #FFF 4.56%, #6DD5FA 61.46%, #2980B9 101.11%); */
+    background: radial-gradient(181.14% 119.24% at 13.61% 9.47%, #72DAFF 0%, #2980B9 100%);
+    display: flex;
+    width: 100vw; /* Set width to 100% of viewport width */
+    height: 100vh; /* Set height to 100% of viewport height */
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+    overflow: hidden; /* Prevent scrolling */
+    justify-content: center;
+    align-items: center;
+  }
+
+
+.form-container{
+    position: relative;
+    width: 90%; /* Adjusted width for laptop display */
+    max-width: 1440px; /* Limiting maximum width */
+    height: 100%; /* Adjusted height for laptop display */
+    background: #EFEFEF;
+    box-shadow: 0px 0px 10px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 70px;
+    margin-top: 30vh; /* Margin from the top of the viewport */
+    margin-bottom:-10vh; 
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.income-title{
+    width: 90%;
+    height: auto;
+    flex-shrink: 0;
+    color: #FFF;
+    text-align: center;
+    font-family: Poppins;
+    font-size: 40px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    top: -3vh; /* Adjusted top position */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Center horizontally */
+    position: absolute; 
+
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.label-container {
+    
+    margin-right: 30px; /* Adjust spacing between label and textbox */
+    display: flex;
+    justify-content: center;
+    margin-right: 30px;
+    align-content: center;
+    align-items: flex-start;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+
+.textbox-container {
+    display: flex;
+    flex-direction: column;
+    align-content: flex-end;
+    justify-content: center;
+    align-items: center;
+    width: 800px;
+    height: 50px;
+    flex-wrap: wrap;
+}
+
+.label-container label {
+    color: #000;
+    font-family: Poppins;
+    font-size: 40px; /* Adjusted font size for laptop display */
+}
+
+.textbox {
+    width: 100%; /* Take up full width */
+    /* max-width: 750px; Limiting maximum width */
+    height: 75px;
+    border-radius: 35px;
+    background: #D9D9D9;
+    font-family: Poppins; /* Use the same font family */
+    font-size: 35px;
+    text-indent: 20px;
+}
+
+
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 60px;
+    align-items: center;
+    /* margin-bottom: 50px; */
+}
+
+.button {
+    border-radius: 50px;
+    background: rgba(36, 139, 206, 0.75);
+    width: 432px;
+    height: 60px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 30px; /* Adjust spacing between buttons */
+}
+
+.button-label {
+    color: #FFF;
+    text-align: center;
+    font-family: Poppins;
+    font-size: 45px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.button:hover {
+    background: rgb(32, 110, 162); /* Change background color on hover */
+    cursor: pointer; /* Change cursor to pointer on hover */
+}
+
+
+
+.total-income-label {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    /* max-width: 220px; */
+    flex-shrink: 0;
+    color: #000;
+    font-family: Poppins;
+    font-size: 40px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.total-income-text {
+    margin-left: 20px; /* Adjust spacing between label and text */
+    margin-right: 10px;
+}
+
+

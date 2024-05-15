@@ -1,0 +1,65 @@
+body {
+    background: linear-gradient(201deg, #FFF 4.56%, #6DD5FA 61.46%, #2980B9 101.11%);
+    display: flex;
+    width: 100vw; /* Set width to 100% of viewport width */
+    height: 100vh; /* Set height to 100% of viewport height */
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+    overflow: hidden; /* Prevent scrolling */
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  .title-home{
+    color: #FFF;
+    text-align: center;
+    font-family: Poppins;
+    font-size: 60px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+  }
+
+  .redirect-btn{
+    width: 326px;
+    height: 70px;
+    flex-shrink: 0;
+    border-radius: 30px;
+    background: #D9D9D9;
+    margin: 20px;
+    color: #000; /* Text color */
+    text-align: center;
+    font-family: Poppins, sans-serif; /* Use Poppins font */
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    border: none;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .redirect-btn a {
+    color: inherit; /* Inherit text color from parent (.redirect-btn) */
+    text-decoration: none; /* Remove underline */
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: relative; /* Maintain relative positioning */
+    z-index: 1; /* Ensure link is clickable */
+    line-height: inherit; /* Inherit line height to center text */
+    align-content: center;
+}
+
+  .btn-container{
+    display: flex;
+    flex-direction: column;
+    height: 350px;
+    flex-wrap: wrap;
+
+  }
+
+  .redirect-btn:hover {
+    background-color: #f4e004; /* Change as needed */
+}

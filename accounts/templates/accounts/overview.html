@@ -1,0 +1,81 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'accounts/overview.css' %}">
+    <title>overview</title>
+</head>
+<body>
+
+    <div class = "income-expense-container">
+        <div class = "title-box-container">
+            <div class = "title-container">
+                Total Income: {{ income.total_amount }} $ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                Leftover Income: {{ income.income_left }} $
+            </div>
+
+            <div class = "box">
+                <br>
+                <strong>Cash Incomes:</strong>
+                <br>
+                    {% for cash_income in cash_incomes %}
+                    <li>Amount: {{ cash_income.amount }} $&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Date: {{ cash_income.day }}</li>
+                    {% endfor %}
+                
+                <br>
+                <strong>Card Incomes:</strong>
+                <br>
+                    {% for card_income in card_incomes %}
+                    <li>Amount: {{ card_income.amount }} $&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Date: {{ card_income.day }}</li>
+                    {% endfor %}
+                
+            </div>
+        </div>
+
+        <div class = "title-box-container">
+            <div class = "title-container">
+                Total Expenses: {{ total_expenses }} $
+            </div>
+            <div class = "box">
+                <br>
+                    {% for expense in expenses %}
+                    <li><strong>Amount: {{ expense.value }} $ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Date: {{ expense.day }}</strong> <br>Importance: {{ expense.type }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Frequency: {{expense.frequency}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Category: {{ expense.category }}</li>
+                    {% endfor %}
+                
+            </div>
+        </div>
+    </div>
+
+    <div class = "income-expense-container">
+        <div class = "title-box-container">
+            <div class = "title-container">
+                Goals:
+            </div>
+            <div class = "box">
+                <br>
+                    {% for goal in goals %}
+                    <li>Title: {{ goal.title }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Target Amount: {{ goal.target_amount }} $&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Achieved: {% if goal.achieved %}Yes{% else %}No{% endif %}</strong></li>
+                    {% endfor %}
+                
+            </div>
+        </div>
+        
+        <br><br><br><br><br>
+        <div class = "other-title">
+        Total Goal Savings: {{ goal_savings.total_savings }} $<br>
+        You need {{need}} $ to achive your next goal <br><br>
+        Total Economies: {{ economies.total_economies }} $
+        <a href="{% url 'home' %}" class="button">Go to Home Page</a>
+
+        
+        </div>
+    </div>
+
+</body>
+</html>

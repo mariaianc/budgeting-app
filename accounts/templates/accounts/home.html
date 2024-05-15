@@ -1,26 +1,39 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'accounts/home.css' %}">
     <title>Home Page</title>
+
 </head>
 <body>
-    <h1>Welcome to the Home Page</h1>
+    <div class = "title-home">
+    Welcome to the Home Page
+    </div>
 
     <!-- Check if the user is authenticated -->
     {% if user.is_authenticated %}
+    <div class = "btn-container" >
         <!-- If the user is logged in, display a link to the income page -->
-        <p><a href="{% url 'income' %}">Go to Income Page</a></p>
-        <p><a href="{% url 'create_expense' %}">Go to Expense Page</a></p>
-        <p><a href="{% url 'upload_image' %}">Upload a receipt picture</a></p>
-        <p><a href="{% url 'chat_view' %}">Learn about budgeting</a></p>
-        <p><a href="{% url 'split_income' %}">Split income</a></p>
-        <p><a href="{% url 'create_goal' %}">Create a goal</a></p>
+        <button class="redirect-btn"><a href="{% url 'income' %}">Go to Income Page</a></button>
+        <button class="redirect-btn"><a href="{% url 'create_expense' %}">Go to Expense Page</a></button>
+        <button class="redirect-btn"><a href="{% url 'upload_image' %}">Upload a receipt picture</a></button>
+        <button class="redirect-btn"><a href="{% url 'chat_view' %}">Learn about budgeting</a></button>
+        <button class="redirect-btn"><a href="{% url 'split_income' %}">Split income</a></button>
+        <button class="redirect-btn"><a href="{% url 'create_goal' %}">Create a goal</a></button>
+    </div>
+    <button class="redirect-btn"><a href="{% url 'overview' %}">Overview</a></button>
+
         
     {% else %}
         <!-- If the user is not logged in, display a link to the login page -->
-        <a href="{% url 'login' %}">Log In</a>
+        <button class="redirect-btn"><a href="{% url 'login' %}">Log In</a></button>
     {% endif %}
 </body>
 </html>

@@ -1,0 +1,132 @@
+body {
+    background: linear-gradient(111deg, #2980B9 33.23%, #2C84BC 37.47%, #58BAE6 59.96%, #56B8E4 72.34%, #6DD5FA 98.41%);
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    /* justify-content: center; */
+    align-items: center;
+    flex-direction: column;
+  }
+
+
+  .title-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    color: #FFF;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    width: 818px;
+    height: 140px;
+    margin-top: 40px;
+}
+
+
+.left-section {
+    width: 50%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+}
+
+.right-section {
+    width: 50%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #000000;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 700;
+
+}
+
+.receipt{
+    background: #D9D9D9;
+    box-shadow: 0px 0px 10px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 70px;
+    width: 550px;
+    height: 450px;
+    overflow: scroll;
+}
+
+.content-section {
+    display: flex;
+    /* flex-grow: 1; */
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+}
+
+.button-left {
+    width: 320px;
+    height: 61px;
+    flex-shrink: 0;
+    border-radius: 30px;
+    background: #D9D9D9;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px; /* Add space between buttons */
+    color: #000;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: 35px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    cursor: pointer;
+}
+.button-left:hover,
+.button-left:focus{
+    background: #fff201;
+}
+
+/* Hide the original file input */
+/* .hidden {
+    display: none;
+} */
+
+/* Style the label to look like a button */
+.file-input {
+    width: 320px;
+    height: 61px;
+    border-radius: 30px;
+    flex-shrink: 0;
+    margin-bottom: 10px;
+    background: #D9D9D9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px; /* Add space between buttons */
+    color: #000;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: 35px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    cursor: pointer;
+}
+
+/* Adjust hover and focus styles as needed */
+.file-input:hover,
+.file-input:focus {
+    background: #fff201;
+}

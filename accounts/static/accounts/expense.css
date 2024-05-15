@@ -1,0 +1,265 @@
+body {
+    /* background: linear-gradient(201deg, #FFF 4.56%, #6DD5FA 61.46%, #2980B9 101.11%); */
+    background: radial-gradient(181.14% 119.24% at 13.61% 9.47%, #72DAFF 0%, #2980B9 100%);
+    display: flex;
+    width: 100vw; /* Set width to 100% of viewport width */
+    height: 100vh; /* Set height to 100% of viewport height */
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+    overflow: hidden; /* Prevent scrolling */
+    justify-content: center;
+    align-items: center;
+  }
+
+.form-container{
+    position: relative;
+    width: 60%;
+    height: 97%;
+    background: #EFEFEF;
+    box-shadow: 0px 0px 10px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 70px;
+    margin-left: 20px;
+}
+
+.form-title{
+    color: #989898;
+    text-align: center;
+    font-family: Poppins;
+    font-size: 60px; /* Adjust font size as needed */
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* height: 20%; */
+}
+
+
+.form-element {
+    display: flex;
+    justify-content: center; /* Center items horizontally */
+}
+
+/* Styles for the form-group */
+.form-group {
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px; /* Adjust margin as needed */
+    
+}
+
+/* Styles for the form-label */
+.form-label {
+    display: flex;
+    width: 89px;
+    height: 43px;
+    flex-direction: column;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #000;
+    text-align: center;
+    font-family: Poppins;
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin-right: 20px;
+}
+
+/* Styles for the textbox-container */
+.textbox-container {
+    flex: 1; /* Take up remaining space */
+}
+
+    /* Styles for the textbox */
+.form-textbox {
+    width: 413px; /* Set width */
+    height: 33px; /* Set height */
+    flex-shrink: 0; /* Prevent shrinking */
+    border-radius: 40px; /* Apply border radius */
+    background: #D9D9D9; /* Apply background color */
+    border: none; /* Remove default border */
+    padding: 8px; /* Adjust padding as needed */
+    box-sizing: border-box; /* Include padding in the width */
+    font-size: 16px; /* Adjust font size as needed */
+}
+
+.flex-container{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    height: 700px;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+
+.form-element2 {
+    display: flex;
+    justify-content:left;
+    flex-direction: column;
+    align-items: flex-start;
+    /* margin-left: 50px; */
+}
+
+/* Styles for the form-group */
+.form-group2 {
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px; /* Adjust margin as needed */
+    flex-direction: column;
+    
+}
+
+.form-element3 {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: flex-start;
+    /* margin-left: 30px; */
+    /* margin-top: 30px; */
+}
+
+/* Styles for the form-group */
+.form-group3 {
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px; /* Adjust margin as needed */
+    flex-direction: column;
+    
+}
+
+/* Styles for the form-label-type */
+.form-label-type {
+    display: flex;
+    width: 196px;
+    height: 48px;
+    flex-direction: column;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #000;
+    text-align: center;
+    font-family: Poppins;
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+/* Styles for the radio-buttons-container */
+.radio-buttons-container {
+    display: flex;
+    
+}
+
+/* Styles for the radio buttons */
+.radio-buttons-container input[type="radio"] {
+    /* display:none;  */
+    accent-color: #eacb07;
+   
+}
+
+.radio-buttons-container label{
+    margin-bottom: 10px; /* Adjust margin between buttons */
+    display: flex;
+    width: 214px;
+    height: 30px;
+    flex-shrink: 0;
+    border-radius: 50px;
+    background: #D9D9D9;
+    /* margin-right: 10px; */
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    font-family: Poppins;
+    font-weight: 400;
+    
+    
+}
+
+/* .radio-buttons-container label span {
+    display: flex;
+    width: 676px;
+    height: 2719px;
+    flex-direction: column;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #a21515;
+    text-align: center;
+    font-family: Inter;
+    font-size: 25px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+} */
+
+/* .radio-buttons-container input[type="radio"]:checked{
+    accent-color: #eacb07;
+} */
+
+
+.radio-buttons-container label:hover
+{
+    background: #eacb07; /* Change background color on hover */
+}
+
+
+.custom-button {
+    color: #FFF;
+    text-align: center;
+    font-family: Poppins;
+    font-size: 40px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    display: flex;
+    width: 238px;
+    height: 56px;
+    justify-content: center;
+    flex-shrink: 0;
+    background: rgba(36, 139, 206, 0.75);
+    border: none; /* Optional: remove default button border */
+    border-radius: 30px;
+    cursor: pointer; /* Optional: show pointer cursor on hover */
+    align-items: center;
+}
+
+.custom-button:hover {
+    background: #0707e5; /* Change background color on hover */
+}
+
+
+.expenses-container {
+    color: #FFF;
+    text-align: center;
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 23px;
+    line-height: normal;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 600px;
+    height: 100%;
+    /* flex-shrink: 0; */
+    /* background: rgba(36, 139, 206, 0.75); */
+    /* border-radius: 30px; */
+    padding: 20px;
+    margin-left: auto;
+}
+
+.expenses-container p {
+    margin: 10px 0; /* Add margin between paragraphs */
+}
+
+/* Adjust margin for h2 if needed */
+.expenses-container h2 {
+    margin-bottom: 20px;
+}
+
+

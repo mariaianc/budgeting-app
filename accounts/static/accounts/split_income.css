@@ -1,0 +1,152 @@
+body {
+    /* background: linear-gradient(201deg, #FFF 4.56%, #6DD5FA 61.46%, #2980B9 101.11%); */
+    background: radial-gradient(181.14% 119.24% at 13.61% 9.47%, #72DAFF 0%, #2980B9 100%);
+    display: flex;
+    width: 100vw; /* Set width to 100% of viewport width */
+    height: 100vh; /* Set height to 100% of viewport height */
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+    overflow: hidden; /* Prevent scrolling */
+    /* justify-content: center; */
+    align-items: center;
+    flex-direction: column;
+  }
+
+
+  .income-title{
+    display: flex;
+    height: 86px;
+    flex-direction: column;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #FFF;
+    text-align: center;
+    font-family: Poppins;
+    font-size: 50px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+
+}
+
+.remainings{
+    display: flex;
+    width:100%; 
+    height: 39px;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #FFF;
+    text-align: center;
+    font-family: Poppins;
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin-bottom: 10px;
+}
+
+.remainings-grouped{
+    display: flex;
+    flex-direction: row;
+}
+
+.label{
+    display: flex;
+    width: 206.31px;
+    height: 26.548px;
+    flex-direction: column;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #FFF;
+    text-align: center;
+    font-family: Poppins;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.textbox{
+    width: 345.934px;
+    height: 24.078px;
+    flex-shrink: 0;
+    border-radius: 40px;
+    background: #D9D9D9;
+}
+
+.lablesitextbox-group
+{
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 20px;
+}
+
+
+.button{
+    width: 135px;
+    height: 39px;
+    flex-shrink: 0;
+    border-radius: 40px;
+    background: #D9D9D9;
+    margin-left: 50px;
+    margin-top: 18px;
+}
+
+.button-label{
+    display: flex;
+    height: 26px;
+    flex-direction: column;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #FFF;
+    text-align: center;
+    font-family: Poppins;
+    font-size: 25px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.button:hover {
+    background: rgb(224, 220, 6); /* Change background color on hover */
+    cursor: pointer; /* Change cursor to pointer on hover */
+}
+
+.content-split{
+    display: flex;
+    flex-direction: column;
+}
+
+.big-content{
+    display: flex;
+    flex-direction: rou;
+    height: 100px;
+    width:50%;
+}
+
+
+.recommendation{
+    background: #D9D9D9;
+    box-shadow: 0px 0px 10px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 0px;
+    width: 1200px;
+    height: 200px;
+    overflow: scroll;
+    margin-bottom: 0px ;
+}
+
+.title-recommendation{
+    display: flex;
+    
+    height: 28px;
+    flex-direction: column;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #FFF;
+    text-align:left;
+    font-family: Poppins;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
