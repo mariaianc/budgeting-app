@@ -27,8 +27,10 @@ def income_membership(income):
 # Example usage
 income_value = 5000  # Example income value
 income_dict = income_membership(income_value)  # Determine the membership of the income value
+print("Membership INCOME:")
 print(income_dict)  # Print the dictionary showing the percentages of income belonging to each category
-
+best_income_category = max(income_dict, key=income_dict.get)
+print("Best Income Category:", best_income_category)
 
 
 def goal_membership(total_savings, target_amount):
@@ -74,10 +76,10 @@ target_amount = 60000
 
 # Call the goal_membership function to calculate the membership degrees
 membership_degrees = goal_membership(total_savings, target_amount)
-print(membership_degrees)
+# print(membership_degrees)
 
-# Print the membership degrees for high, medium, and low progress
-print("Membership Degrees:")
-print("High Progress:", membership_degrees['high'])
-print("Medium Progress:", membership_degrees['medium'])
-print("Low Progress:", membership_degrees['low'])
+# # Print the membership degrees for high, medium, and low progress
+# print("Membership Degrees:")
+# print("High Progress:", membership_degrees['high'])
+# print("Medium Progress:", membership_degrees['medium'])
+# print("Low Progress:", membership_degrees['low'])

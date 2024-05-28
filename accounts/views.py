@@ -624,26 +624,23 @@ def generate_recommendation_numeric(user):
     - Vices: {vices}
     - Other: {other}
 
-    Savings and Goals:
-    Economies Fund Balance: {total_economies}
-    Goal: {goal_name} (Cost: {cost})
-    Savings for Goal: {savings}
+    Goal Savings:
+        - Total Savings: {savings}
+        - Target Amount: {cost}
+
+    Emergency Fund Balance: {total_economies} 
 
     Respond to the following questions with specific recommendations:
-    1. How should I allocate my leftover income between the Economies Fund and my Goal Fund this month?I want to prioritize building a sufficient Economies Fund and making progress towards my goal? I want you to give me the exact amount to put in each category.
-    2. What expenses should I prioritize or reduce to maximize my leftover income?
-    3. Given my goal, what adjustments can I make to achieve it more efficiently?
-
-    Please consider that I prioritize maintaining a certain level of spending on housing, food, and health to ensure a comfortable lifestyle, but I am open to adjustments in other areas to increase savings.
-    Answer in simple and concrete propositions.
+    1. How should I split my leftover income between the Emergency Fund and my Goal Fund? Give me the concrete values to put in each fund based on the leftover income.(the leftover income has to be split completely between emergency and goal funds)
+    2. Are there any specific categories where I can reduce expenses without impacting my quality of life?
+    3. How can I create a budget plan to better manage my monthly income and expenses next month?
     """
 
-    system_content = """You are a financial advisor tasked with optimizing the user's budget and helping them achieve their financial goals.
-        Analyze the provided financial data to offer tailored advice. Consider the user's priorities and constraints when making recommendations.
-        Your main objectives are to maximize leftover income and allocate funds effectively between the Economies Fund and Goal Fund to increase savings contributions.
+    system_content = """
+    You are a financial advisor into a budgeting app tasked with analyzing the user's financial data and providing tailored recommendations to optimize their budget and achieve their financial goals.
+    Consider the user's priorities, such as building an Emergency Fund, making progress towards their savings goal, and reducing unnecessary expenses.
+    Your main objectives are to provide concrete allocation strategies for the user's leftover income, identify potential areas for expense reduction without compromising their quality of life, and offer guidance on creating a budget plan for better financial management next month.
     """
-
-
     client = OpenAI(api_key=OPENAI_API_KEY)
 
     completion = client.chat.completions.create(
@@ -656,9 +653,10 @@ def generate_recommendation_numeric(user):
     temperature = 0.3 #cea mai buna pt chestii stiintifice si precise,ne creative
     )
 
-    recomandation = completion.choices[0].message.content
+    recommendation = completion.choices[0].message.content
 
-    return recomandation
+    return recommendation
+    
 
 def generate_recommendation_fuzzy(user):
     # Obtain user's financial data
@@ -697,7 +695,6 @@ def generate_recommendation_fuzzy(user):
         month=last_month,
         year=year,
         monthly_savings=0)
-
     savings = float(goal_savings.total_savings)
 
     economies = Economies.create_or_update_economies(
@@ -710,7 +707,9 @@ def generate_recommendation_fuzzy(user):
     # Calculate membership degrees for each category
     income_membership_dict = income_membership(total_income)
     left_income_membership_dict = left_income_membership(left_income)
+
     total_expenses_membership_dict = total_expenses_membership(total_expenses, total_income)
+
     housing_membership_dict = housing_membership(housing, total_income)
     food_membership_dict = food_membership(food, total_income)
     health_membership_dict = health_membership(health, total_income)
@@ -720,16 +719,22 @@ def generate_recommendation_fuzzy(user):
     entertainment_membership_dict = entertainment_membership(entertainment, total_income)
     vices_membership_dict = vices_membership(vices, total_income)
     other_membership_dict = other_membership(other, total_income)
-    total_economies_membership_dict = total_economies_membership(total_economies)
+
+    total_economies_membership_dict = emergency_fund_membership(total_income, total_economies)
+
     goal_membership_dict = goal_membership(savings, cost)
 
-    user_input = f""" Here is my financial data from the last month:
+    user_input = f""" 
+    Here is my financial data from the last month:
+    Interpretation: The highest membership value indicates the category where the entitie is situated: high, medium or low.
         About Income:
         Total Income (after taxes): {total_income} (Membership: High: {income_membership_dict['high']}, Medium: {income_membership_dict['medium']}, Low: {income_membership_dict['low']})
         Leftover Income at the End of the Month: {left_income} (Membership: High: {left_income_membership_dict['high']}, Medium: {left_income_membership_dict['medium']}, Low: {left_income_membership_dict['low']})
+        If leftover income is high it means that the user saved a lot that month and if it is low that means the user don't save much that month.
 
         About Expenses:
         Total Expenses: {total_expenses} (Membership: High: {total_expenses_membership_dict['high']}, Medium: {total_expenses_membership_dict['medium']}, Low: {total_expenses_membership_dict['low']})
+        Membership of total expenses are computed in tersm of the income so if the total expenses are high it means the user spends too much and if they are low or medium it means the user spending behaviour is good for maximizing the savings.
         Expenses Breakdown:
         - Housing: {housing} (Membership: High: {housing_membership_dict['high']}, Medium: {housing_membership_dict['medium']}, Low: {housing_membership_dict['low']})
         - Food: {food} (Membership: High: {food_membership_dict['high']}, Medium: {food_membership_dict['medium']}, Low: {food_membership_dict['low']})
@@ -740,34 +745,32 @@ def generate_recommendation_fuzzy(user):
         - Entertainment: {entertainment} (Membership: High: {entertainment_membership_dict['high']}, Medium: {entertainment_membership_dict['medium']}, Low: {entertainment_membership_dict['low']})
         - Vices: {vices} (Membership: High: {vices_membership_dict['high']}, Medium: {vices_membership_dict['medium']}, Low: {vices_membership_dict['low']})
         - Other: {other} (Membership: High: {other_membership_dict['high']}, Medium: {other_membership_dict['medium']}, Low: {other_membership_dict['low']})
+        If the category is high that means the user spend much on that and if it is low it means the user did not spend much money on it. In the categories "Housing", "Food", "Health", "Utilities" is ok to spend high but on the others is best to tend to low/medium.
 
-        Savings and Goals:
-        Economies Fund Balance: {total_economies} (Membership: High: {total_economies_membership_dict['high']}, Medium: {total_economies_membership_dict['medium']}, Low: {total_economies_membership_dict['low']})
-        Goal: {goal_name} (Cost: {cost}) (Membership: High: {goal_membership_dict['high']}, Medium: {goal_membership_dict['medium']}, Low: {goal_membership_dict['low']})
-        Savings for Goal: {savings}
+        Emergency Fund: {total_economies}
+        Emergency Fund Membership: (Membership: High: {total_economies_membership_dict['high']}, Medium: {total_economies_membership_dict['medium']}, Low: {total_economies_membership_dict['low']})
+        The emergency membership is medium or low when the user has to continue to invest over time to build the fund and high when the user can invest lower amounts in it because the funds are enough.
 
-        Interpretation:
-        - High Membership in Income: Indicates a strong financial position with a high income level, providing ample opportunities for saving and investment.
-        - Low Membership in Expenses: Suggests good control over spending, with most expenses falling in the low range. However, further optimization may be possible in certain categories to increase savings.
-        - Medium Membership in Economies Fund: Reflects a moderate level of savings, providing some financial security but room for improvement in building a stronger safety net.
-        - Low Membership in Income: Indicates a lower-than-average income level, which may require careful budgeting and prioritization of expenses. Consider exploring opportunities to increase income through additional sources or optimizing existing income streams.
-        - High Membership in Expenses: Suggests that expenses are predominantly in the high range, potentially impacting overall savings. It's essential to review and prioritize expenses to identify areas for reduction or optimization, such as discretionary spending on entertainment or vices.
+        Goal Savings:
+        - Total Savings: {savings}
+        - Target Amount: {cost}
+        - Goal Progress Membership: High: {goal_membership_dict['high']}, Medium: {goal_membership_dict['medium']}, Low: {goal_membership_dict['low']}
+        The goal progress membership is medium or high when the target is almost achived and low when the user has to continue to invest.
 
-
-        
-        Respond to the following questions with specific recommendations:
-        1. How should I allocate my leftover income between the Economies Fund and my Goal Fund this month?I want to prioritize building a sufficient Economies Fund and making progress towards my goal. Please consider the membership values when providing recommendations. Give me the concrete values to put in each category.
-        2. What expenses should I prioritize or reduce to maximize my leftover income? Please take into account the membership values to identify areas for potential savings.
-        3. Given my goal, what adjustments can I make to achieve it more efficiently?
-        
-        Please consider that I prioritize maintaining a certain level of spending on housing, food, and health to ensure a comfortable lifestyle, but I am open to adjustments in other areas to increase savings.
-        Answer in simple and concrete propositions.
+        Respond to the following questions with specific recommendations, take into account membership functions used for each question:
+        1. How should I split my leftover income between the Emergency Fund and my Goal Fund? Give me the concrete values to put in each fund based on the leftover income. (the leftover income has to be split completely between emergency and goal funds) 
+        2. Are there any specific categories where I can reduce expenses without impacting my quality of life?
+        3. How can I create a budget plan to better manage my monthly income and expenses next month?
         """
 
-    system_content = """You are a financial advisor tasked with optimizing the user's budget and helping them achieve their financial goals.
-        Analyze the provided financial data, including membership values, to offer tailored advice. Consider the user's priorities and constraints when making recommendations.
-        Your main objectives are to maximize leftover income and allocate funds effectively between the Economies Fund and Goal Fund to increase savings contributions, taking into account the fuzzy logic-based membership values.
-    """
+    system_content = """
+        You are a financial advisor into a budgeting app tasked with analyzing the user's financial data and providing tailored recommendations to optimize their budget and achieve their financial goals.
+        Consider the user's priorities, such as building an Emergency Fund, making progress towards their savings goal, and reducing unnecessary expenses.
+        Your main objectives are to provide concrete allocation strategies for the user's leftover income, identify potential areas for expense reduction without compromising their quality of life, and offer guidance on creating a budget plan for better financial management next month.
+        Put accent on the membership functions and explain to the user what are those and how to improve its financial life based on those.
+        """
+
+
 
     # Generate recommendation using OpenAI API
     client = OpenAI(api_key=OPENAI_API_KEY)
@@ -784,7 +787,9 @@ def generate_recommendation_fuzzy(user):
 
     recommendation = completion.choices[0].message.content
 
+    # return formatted_response
     return recommendation
+
 
 
 # Import the triangular_sigmoid function from the fuzzylogic library
@@ -1030,7 +1035,7 @@ def other_membership(other_expense, income):
 
     return membership_dict
 
-def total_economies_membership(total_economies):
+# def total_economies_membership(total_economies):
     """
     Calculate the membership degrees for the emergency fund based on the total amount accumulated over time.
 
@@ -1061,6 +1066,40 @@ def total_economies_membership(total_economies):
         'low': membership_low
     }
 
+    return membership_dict
+
+
+def emergency_fund_membership(income, emergency_fund):
+    """
+    Determine the membership of an emergency fund value relative to the income in the categories: high, medium, low.
+    
+    Args:
+    - income (float): The income value.
+    - emergency_fund (float): The emergency fund value.
+    
+    Returns:
+    - dict: A dictionary showing the percentage of emergency fund belonging to each category.
+    """
+    
+    # Define ranges for emergency fund levels based on a percentage of the income
+    # Assume high is 6+ months, medium is 3-6 months, and low is less than 3 months
+    high_fund = triangular_sigmoid(0.5 * income, 6 * income)
+    medium_fund = triangular_sigmoid(0.25 * income, 3 * income)
+    low_fund = triangular_sigmoid(0, 0.25 * income)
+    
+    # Calculate membership degrees for each emergency fund level
+    membership_high = high_fund(emergency_fund)
+    membership_medium = medium_fund(emergency_fund)
+    membership_low = low_fund(emergency_fund)
+    
+    # Create a dictionary to store the percentages of the emergency fund belonging to each category
+    membership_dict = {
+        'high': membership_high,
+        'medium': membership_medium,
+        'low': membership_low
+    }
+    
+    # Return the dictionary
     return membership_dict
 
 #computes how much progress you have made towards achieving your goal

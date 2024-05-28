@@ -34,10 +34,10 @@
             <div class = "content-split">
                 <div class = "lablesitextbox-group">
                     <div class = "label">
-                        <label for="economies_amount">Economies</label>
+                        <label for="economies_amount">Emergency</label>
                     </div>
                     <div class = "textbox">
-                        <input type="number" id="economies_amount" name="economies_amount" min="0" oninput="updateGoalAmount()" class = "textbox">
+                        <input type="number" id="economies_amount" name="economies_amount" min="0" step="0.01" oninput="updateGoalAmount()" class = "textbox">
                     </div>
                     <div class = "label">
                         Total: {{ total_economies }} $
@@ -49,7 +49,7 @@
                         <label for="goal_amount">Goal</label>
                     </div>
                     <div class = "textbox">
-                        <input type="number" id="goal_amount" name="goal_amount" min="0" oninput="updateEconomiesAmount()" class = "textbox">
+                        <input type="number" id="goal_amount" name="goal_amount" min="0" step="0.01" oninput="updateEconomiesAmount()" class = "textbox">
                     </div>
                     <div class = "label">
                         Total: {{ total_goal_savings }} $
@@ -82,14 +82,16 @@
             Recommendation with numeric values:
         </div>
         <div class = "recommendation">
-        {{ recommendation1 }}
+        <pre>{{ recommendation1 }}</pre>
+        {% comment %} {{ recommendation1 }} {% endcomment %}
         </div>
 
         <div class = "title-recommendation">
             Recommendation with fuzzy logic:
         </div>
         <div class = "recommendation">
-            {{ recommendation2 }}
+            {% comment %} {{ recommendation2 }} {% endcomment %}
+            <pre>{{ recommendation2 }}</pre>
         </div>
     </div>
 
